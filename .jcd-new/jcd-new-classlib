@@ -1,0 +1,57 @@
+#!/bin/bash
+set -e
+echo jcd-new classlib "v$JCD_NEW_VERSION"
+# TODO: validate that $github has been set and the directory exists
+# TODO: validate that the gh tool is installed
+# TODO: validate that the dotnet command line is installed
+# TODO: validate that the GITHUB_TOKEN environment variable is set.
+# TODO: validate GITHUB_USER_NAME is set
+
+PROJECT_NAME=$1
+# TODO: parse other incoming variables.
+echo creating project "$PROJECT_NAME"
+
+#TODO: verify the project doesn't already exist
+
+cd $github
+dotnet new sln -o "$PROJECT_NAME"
+cd "./$PROJECT_NAME"
+git init
+
+dotnet new gitignore
+#TODO: get the IntelliJ gitignore using curl and append to .gitignore
+
+#TODO: process a template README.md to generate it.
+touch README.md
+
+#TODO: process a template LICENSE file to generate it
+touch LICENSE
+
+#TODO: create a template nuget.config and use that instead.
+dotnet new nugetconfig
+
+dotnet new classlib -o "$PROJECT_NAME"
+dotnet add "$PROJECT_NAME/$PROJECT_NAME.csproj" package Jcd.Validations
+dotnet add "$PROJECT_NAME/$PROJECT_NAME.csproj" package DefaultDocumentation
+
+dotnet sln add "$PROJECT_NAME/$PROJECT_NAME.csproj"
+dotnet new xunit -o "$PROJECT_NAME.Tests"
+dotnet add "$PROJECT_NAME.Tests/$PROJECT_NAME.Tests.csproj" package Moq
+
+dotnet sln add "$PROJECT_NAME.Tests/$PROJECT_NAME.Tests.csproj"
+dotnet new console -o "$PROJECT_NAME.Examples"
+dotnet sln add "$PROJECT_NAME.Examples/$PROJECT_NAME.Examples.csproj"
+dotnet add "$PROJECT_NAME.Examples/$PROJECT_NAME.Examples.csproj" reference "$PROJECT_NAME/$PROJECT_NAME.csproj"
+dotnet add "$PROJECT_NAME.Tests/$PROJECT_NAME.Tests.csproj" reference "$PROJECT_NAME/$PROJECT_NAME.csproj"
+
+git add .
+git commit -m "Project created with jcd-new classlib"
+git branch -M main
+
+#TODO: add README.md to library .csproj file as nuget packable
+
+#TODO: finish github interactions
+#gh auth login --hostname github.com
+#gh repo create "$GITHUB_USER_NAME/$PROJECT_NAME"
+#git remote add origin "https://github.com/$GITHUB_USER_NAME/$PROJECT_NAME.git"
+#git push -u origin main

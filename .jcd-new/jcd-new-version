@@ -1,2 +1,2 @@
 #!/bin/bash
-echo $JCD_NEW_VERSION
+echo "$JCD_NEW_VERSION"
