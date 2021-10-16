@@ -1,0 +1,19 @@
+# {PROJECT_NAME}
+A short project description goes here
+
+## Examples
+```csharp
+// snippets of code from the examples project goes here.
+```
+
+# Before you begin coding, setup the AppVeyor project and update the project slug in this file, as well as the ro documentation md file. Then delete this line.
+
+
+[![GitHub](https://img.shields.io/github/license/{GITHUB_USER_NAME}/{PROJECT_NAME})](https://github.com/{GITHUB_USER_NAME}/{PROJECT_NAME}/blob/main/LICENSE)
+[![Build status](https://ci.appveyor.com/api/projects/status/sbmfvmr1jmcf1pic?svg=true)](https://ci.appveyor.com/project/{GITHUB_USER_NAME}/TODO_YOUR_PROJECT_SLUG_HERE)
+[![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/{GITHUB_USER_NAME}/{PROJECT_NAME})](https://www.codefactor.io/repository/github/{GITHUB_USER_NAME}/{PROJECT_NAME})
+
+[![MyGet](https://img.shields.io/myget/{GITHUB_USER_NAME}/v/{PROJECT_NAME}?logo=nuget)](https://www.myget.org/feed/{GITHUB_USER_NAME}/package/nuget/{PROJECT_NAME})
+[![Nuget](https://img.shields.io/nuget/v/{PROJECT_NAME}?logo=nuget)](https://www.nuget.org/packages/{PROJECT_NAME})
+
+[![API Docs](https://img.shields.io/badge/Read-The%20API%20Documentation-blue?style=for-the-badge)](https://github.com/{GITHUB_USER_NAME}/{PROJECT_NAME}/blob/main/docs/TODO_DOCS_ROOT.md)

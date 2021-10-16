@@ -1,57 +1,128 @@
 #!/bin/bash
 set -e
 echo jcd-new classlib "v$JCD_NEW_VERSION"
-# TODO: validate that $github has been set and the directory exists
-# TODO: validate that the gh tool is installed
-# TODO: validate that the dotnet command line is installed
-# TODO: validate that the GITHUB_TOKEN environment variable is set.
-# TODO: validate GITHUB_USER_NAME is set
 
+#validate that $github has been set and the directory exists
+if [ -z ${github+x} ]
+then
+  echo "\$github variable not set."
+  exit 1;
+fi
+# validate that the GITHUB_TOKEN environment variable is set.
+if [ -z ${GITHUB_TOKEN+x} ]
+then
+  echo "\$GITHUB_TOKEN variable not set."
+  exit 1
+fi
+# validate GITHUB_USER_NAME is set
+if [ -z ${GITHUB_USER_NAME+x} ]
+then
+  echo "\$GITHUB_USER_NAME variable not set."
+  exit 1
+fi
+
+# validate that the gh tool is installed
+gh_ver=$(gh --version)
+# validate that the dotnet command line is installed
+dotnet_ver=$(dotnet --version)
+
+# capture some data
 PROJECT_NAME=$1
-# TODO: parse other incoming variables.
-echo creating project "$PROJECT_NAME"
+YEAR=$(date +'%Y')
 
-#TODO: verify the project doesn't already exist
+# TODO: parse other incoming params (if any).
+cd "$github"
 
-cd $github
+#Verify the project doesn't already exist
+if [ -d "./$PROJECT_NAME" ]
+  then echo "Cannot create new project: folder already exists."
+  exit 1;
+fi
+
+echo Creating project "$PROJECT_NAME"
 dotnet new sln -o "$PROJECT_NAME"
 cd "./$PROJECT_NAME"
 git init
 
-dotnet new gitignore
-#TODO: get the IntelliJ gitignore using curl and append to .gitignore
+touch .gitignore
+curl https://raw.githubusercontent.com/github/gitignore/master/Global/JetBrains.gitignore >> .gitignore
+curl https://raw.githubusercontent.com/github/gitignore/master/VisualStudio.gitignore >> .gitignore
+curl https://raw.githubusercontent.com/github/gitignore/master/Global/VisualStudioCode.gitignore >> .gitignore
 
-#TODO: process a template README.md to generate it.
-touch README.md
+#process a template README.md to generate it.
+cat "$JCD_NEW_LIBS/README.template" | \
+  sed "s/{PROJECT_NAME}/$PROJECT_NAME/g" | \
+  sed "s/{GITHUB_USER_NAME}/$GITHUB_USER_NAME/g" \
+  > README.md
 
-#TODO: process a template LICENSE file to generate it
-touch LICENSE
+#process a template LICENSE file to generate it
+cat "$JCD_NEW_LIBS/LICENSE.template" | \
+  sed "s/{YEAR}/$YEAR/g" | \
+  sed "s/{FULL_NAME}/$FULL_NAME/g" \
+  > LICENSE
 
 #TODO: create a template nuget.config and use that instead.
 dotnet new nugetconfig
 
-dotnet new classlib -o "$PROJECT_NAME"
+dotnet new classlib -o "$PROJECT_NAME" -f netstandard2.1
 dotnet add "$PROJECT_NAME/$PROJECT_NAME.csproj" package Jcd.Validations
 dotnet add "$PROJECT_NAME/$PROJECT_NAME.csproj" package DefaultDocumentation
-
 dotnet sln add "$PROJECT_NAME/$PROJECT_NAME.csproj"
+
 dotnet new xunit -o "$PROJECT_NAME.Tests"
 dotnet add "$PROJECT_NAME.Tests/$PROJECT_NAME.Tests.csproj" package Moq
-
-dotnet sln add "$PROJECT_NAME.Tests/$PROJECT_NAME.Tests.csproj"
-dotnet new console -o "$PROJECT_NAME.Examples"
-dotnet sln add "$PROJECT_NAME.Examples/$PROJECT_NAME.Examples.csproj"
-dotnet add "$PROJECT_NAME.Examples/$PROJECT_NAME.Examples.csproj" reference "$PROJECT_NAME/$PROJECT_NAME.csproj"
 dotnet add "$PROJECT_NAME.Tests/$PROJECT_NAME.Tests.csproj" reference "$PROJECT_NAME/$PROJECT_NAME.csproj"
+dotnet sln add "$PROJECT_NAME.Tests/$PROJECT_NAME.Tests.csproj"
+
+dotnet new console -o "$PROJECT_NAME.Examples"
+dotnet add "$PROJECT_NAME.Examples/$PROJECT_NAME.Examples.csproj" reference "$PROJECT_NAME/$PROJECT_NAME.csproj"
+dotnet sln add "$PROJECT_NAME.Examples/$PROJECT_NAME.Examples.csproj"
 
 git add .
 git commit -m "Project created with jcd-new classlib"
 git branch -M main
 
-#TODO: add README.md to library .csproj file as nuget packable
+#Add README.md to library .csproj file as nuget packable
+sed -i 's/<\/Project>//' "$PROJECT_NAME/$PROJECT_NAME.csproj"
+echo "
+    <PropertyGroup>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Title>$PROJECT_NAME</Title>
+        <Authors>$FULL_NAME</Authors>
+        <Description>A short description goes here.</Description>
+        <Copyright>$YEAR</Copyright>
+        <PackageProjectUrl>https://github.com/$GITHUB_USER_NAME/$PROJECT_NAME</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/$GITHUB_USER_NAME/$PROJECT_NAME/blob/main/LICENSE</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/$GITHUB_USER_NAME/$PROJECT_NAME</RepositoryUrl>
+        <RepositoryType>GitHub</RepositoryType>
+        <PackageVersion>0.0.1</PackageVersion>
+        <AssemblyVersion>0.0.1</AssemblyVersion>
+        <FileVersion>0.0.1</FileVersion>
+        <TargetFrameworks>netstandard2.1</TargetFrameworks>
+        <PackageIconUrl>https://s.gravatar.com/avatar/c7e8df18f543ea857ac93660a190df98?s=320</PackageIconUrl>
+        <PackageReleaseNotes></PackageReleaseNotes>
+    </PropertyGroup>
 
-#TODO: finish github interactions
-#gh auth login --hostname github.com
-#gh repo create "$GITHUB_USER_NAME/$PROJECT_NAME"
-#git remote add origin "https://github.com/$GITHUB_USER_NAME/$PROJECT_NAME.git"
-#git push -u origin main
+    <PropertyGroup>
+      <PackageReadmeFile>README.md</PackageReadmeFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <None Include=\"..\\README.md\" Pack=\"true\" PackagePath=\"\\\" />
+    </ItemGroup>
+
+    <PropertyGroup Condition=\" '\$(Configuration)' == 'Debug' \">
+      <DocumentationFile>..\\docs\\$PROJECT_NAME.xml</DocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=\" '\$(Configuration)' == 'Release' \">
+      <DocumentationFile>..\\docs\\$PROJECT_NAME.xml</DocumentationFile>
+    </PropertyGroup>
+
+</Project>
+" >> "$PROJECT_NAME/$PROJECT_NAME.csproj"
+
+# Create the github repo and do the initial push
+gh auth login --hostname github.com || true
+gh repo create "$GITHUB_USER_NAME/$PROJECT_NAME" --public --gitignore= --license= -y || true
+git push -u origin main || true
