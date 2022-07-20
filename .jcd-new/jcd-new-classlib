@@ -1,6 +1,31 @@
 #!/bin/bash
 set -e
-echo jcd-new classlib "v$JCD_NEW_VERSION"
+echo jcd-new classlib running "v$JCD_NEW_VERSION"
+
+for i in $*; do
+  echo $i "--"
+  case $i in
+    -p=*|--project=*)
+      echo "found project"
+      PROJECT_NAME="${i#*=}"
+      shift # past argument=value
+      ;;
+    -ngh|--no-github)
+      NO_GITHUB=1
+      shift # past argument
+      ;;
+    *)
+      # ignore unknown option
+      shift # past unknown option
+      ;;
+  esac
+done
+
+if [ -z ${PROJECT_NAME} ]
+then
+    echo "No project name specified. Please use -p= or --project= to specify the project name."
+    exit 1
+fi
 
 #validate that $github has been set and the directory exists
 if [ -z ${github+x} ]
@@ -27,7 +52,6 @@ gh_ver=$(gh --version)
 dotnet_ver=$(dotnet --version)
 
 # capture some data
-PROJECT_NAME=$1
 YEAR=$(date +'%Y')
 
 # TODO: parse other incoming params (if any).
@@ -121,6 +145,11 @@ echo "
 
 </Project>
 " >> "$PROJECT_NAME/$PROJECT_NAME.csproj"
+
+if [ -z ${NO_GITHUB+x} ]
+then
+  exit 0
+fi
 
 # Create the github repo and do the initial push
 gh auth login --hostname github.com || true

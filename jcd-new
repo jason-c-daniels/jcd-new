@@ -12,7 +12,7 @@ main() {
         command="$JCD_NEW_LIBS/jcd-new-$1"
 
         if [[ -f "$command" ]]; then
-            bash "$command" "${*:2}"
+            bash "$command" ${*:2}
         else
             echo >&2 "Unknown command: $1."
             bash "$JCD_NEW_LIBS/jcd-new-help"
@@ -21,4 +21,4 @@ main() {
     fi;
 }
 
-main "$@"
+main $@
