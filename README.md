@@ -59,8 +59,8 @@ REQUIRED ENVIRONMENT VARIABLES:
 You must have the following environment variables defined:
 * $github - must point to the root folder for your personal GitHub repositories.
 
-* $GITHUB_USER_NAME - this is required for generating the correct documentation from various template files.
+* $GITHUB_USER_NAME - is required for generating the correct documentation from various template files.
 
-* $GITHUB_TOKEN - this allows the gh tool to push code to GitHub.
+* $GITHUB_TOKEN - is required for the gh tool to push code to GitHub.
 
-* $FULL_NAME - this is required for generating the correct documentation from various template files.
+* $FULL_NAME - is required for generating the correct documentation from various template files.
