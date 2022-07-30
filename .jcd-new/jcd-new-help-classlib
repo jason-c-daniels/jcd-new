@@ -16,7 +16,7 @@ jcd-new classlib <options>
                                     The default is 2.1. Valid options are: 1.0, 1.1, 1.2, 1.3, 1.4, 1.5,
                                     1.6, 2.0 and 2.1.
 
-   -nvs=<version>                   An alias for --netstandard-version
+   -nsv=<version>                   An alias for --netstandard-version
 
    --version                        Prints the version of jcd-new in use.
 
@@ -38,4 +38,24 @@ You must have the following environment variables defined:
 
   * \$FULL_NAME - this is required for generating the correct documentation from various
                  template files.
+
+EXAMPLES:
+Create a .NET Standard 2.1 class library and push it to github
+  jcd-new classlib --project-name=Jcd.Delete.Me1
+  jcd-new classlib --project=Jcd.Delete.Me2
+  jcd-new classlib -p=Jcd.Delete.Me3
+
+Create a .NET Standard 1.0 class library and push it to github
+  jcd-new classlib -p=Jcd.Delete.Me1 --netstandard-version=1.0
+  jcd-new classlib -p=Jcd.Delete.Me1 -nsv=1.0
+
+Create a class library and DO NOT push it to github
+  jcd-new classlib -p=Jcd.Delete.Me4 --no-github
+  jcd-new classlib -p=Jcd.Delete.Me5 -ngh
+
+Display the version number for jcd-new
+  jcd-new classlib --version
+
+Display this help message
+  jcd-new help classlib
 EOF
