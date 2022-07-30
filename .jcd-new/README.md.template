@@ -1,0 +1,40 @@
+# {PROJECT_NAME}
+A short project description goes here
+
+## Examples
+```csharp
+// snippets of code from the examples project goes here.
+```
+
+# Before you begin coding
+1. If you didn't push to github as part of the project creation, you'll need to do so before setting up the AppVeyor and codefactor links
+2. Setup the [AppVeyor project](https://ci.appveyor.com/projects) and replace TODO_YOUR_PROJECT_SLUG_HERE, in this file, with the project slug.
+  * The project slug can be found in the URL of the project after creation or on the Settings/General tab.
+  * On the Settings/General tab
+    - Set your build version (typically to 0.0.{build} for a new project.)
+    - Turn on AssemblyInfo patching.
+    - Turn on .NET Core project fils patching.
+  * On the Settings/Environment tab, select the Ubuntu build worker image to ensure unit tests run on Linux.
+  * On the Settings/Build tab
+    - Set "Configuration" to "Release"
+    - Turn on "Package NuGet projects."
+  * On the Settings/Deployment tab
+    - Set up a NuGet provider pointed to MyGet: https://www.myget.org/F/jason-c-daniels/api/v2/package
+    - Set your API key/personal access token. You can get it from your [MyGet Access Tokens](https://www.myget.org/profile/Me#!/AccessTokens)
+    - Turn on "Deploy from branch" with the branch set to "main"
+3. Setup the [codefactor.io project](https://www.codefactor.io/dashboard).
+  * Click the "+ Add" button on the [dashboard](https://www.codefactor.io/dashboard)
+  * Select {PROJECT_NAME} from the list.
+  * Click "Import" at the bottom of the screen.
+4. Delete this section of the this file and replace it with something meaningful.
+
+
+
+[![GitHub](https://img.shields.io/github/license/{GITHUB_USER_NAME}/{PROJECT_NAME})](https://github.com/{GITHUB_USER_NAME}/{PROJECT_NAME}/blob/main/LICENSE)
+[![Build status](https://ci.appveyor.com/api/projects/status/sbmfvmr1jmcf1pic?svg=true)](https://ci.appveyor.com/project/{GITHUB_USER_NAME}/TODO_YOUR_PROJECT_SLUG_HERE)
+[![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/{GITHUB_USER_NAME}/{PROJECT_NAME})](https://www.codefactor.io/repository/github/{GITHUB_USER_NAME}/{PROJECT_NAME})
+
+[![MyGet](https://img.shields.io/myget/{GITHUB_USER_NAME}/v/{PROJECT_NAME}?logo=nuget)](https://www.myget.org/feed/{GITHUB_USER_NAME}/package/nuget/{PROJECT_NAME})
+[![Nuget](https://img.shields.io/nuget/v/{PROJECT_NAME}?logo=nuget)](https://www.nuget.org/packages/{PROJECT_NAME})
+
+[![API Docs](https://img.shields.io/badge/Read-The%20API%20Documentation-blue?style=for-the-badge)](https://github.com/{GITHUB_USER_NAME}/{PROJECT_NAME}/blob/main/docs/{PROJECT_NAME}.md)

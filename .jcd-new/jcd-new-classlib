@@ -96,7 +96,7 @@ curl https://raw.githubusercontent.com/github/gitignore/master/VisualStudio.giti
 curl https://raw.githubusercontent.com/github/gitignore/master/Global/VisualStudioCode.gitignore >> .gitignore
 
 #process a template README.md to generate it.
-cat "$JCD_NEW_LIBS/README.template" | \
+cat "$JCD_NEW_LIBS/README.md.template" | \
   sed "s/{PROJECT_NAME}/$PROJECT_NAME/g" | \
   sed "s/{GITHUB_USER_NAME}/$GITHUB_USER_NAME/g" \
   > README.md
@@ -124,7 +124,7 @@ dotnet new console -o "$PROJECT_NAME.Examples"
 dotnet add "$PROJECT_NAME.Examples/$PROJECT_NAME.Examples.csproj" reference "$PROJECT_NAME/$PROJECT_NAME.csproj"
 dotnet sln add "$PROJECT_NAME.Examples/$PROJECT_NAME.Examples.csproj"
 
-#Add README.md to library .csproj file as nuget packable
+#Set netstandard version. Add README.md, nuget.config and LICENSE to library .csproj file
 sed -i "s/<TargetFramework>netstandard2.1<\/TargetFramework>/<TargetFramework>netstandard$NETSTANDARD_VERSION<\/TargetFramework>/" "$PROJECT_NAME/$PROJECT_NAME.csproj"
 sed -i 's/<\/Project>//' "$PROJECT_NAME/$PROJECT_NAME.csproj"
 echo "
@@ -152,8 +152,8 @@ echo "
 
     <ItemGroup>
       <None Include=\"..\\README.md\" Pack=\"true\" PackagePath=\"\\\" />
-      <None Include=\"..\\LICENSE\" Pack=\"true\" PackagePath=\"\\\" />
-      <None Include=\"..\\nuget.config\" Pack=\"true\" PackagePath=\"\\\" />
+      <None Include=\"..\\LICENSE\" Pack=\"false\" PackagePath=\"\\\" />
+      <None Include=\"..\\nuget.config\" Pack=\"false\" PackagePath=\"\\\" />
     </ItemGroup>
 
     <PropertyGroup Condition=\" '\$(Configuration)' == 'Debug' \">
@@ -166,6 +166,22 @@ echo "
 
 </Project>
 " >> "$PROJECT_NAME/$PROJECT_NAME.csproj"
+
+pushd "$PROJECT_NAME"
+
+echo "Creating NamespaceDoc class with summary comments."
+cat "$JCD_NEW_LIBS/NamespaceDoc.cs.template" | \
+  sed "s/{PROJECT_NAME}/$PROJECT_NAME/g" \
+  > NamespaceDoc.cs
+
+echo "Creating Class1 class with summary comments."
+cat "$JCD_NEW_LIBS/Class1.cs.template" | \
+  sed "s/{PROJECT_NAME}/$PROJECT_NAME/g" \
+  > Class1.cs
+
+popd
+echo "Performing initial build of $PROJECT_NAME to generate documentation stub."
+dotnet build
 
 git branch -M main
 git add .
