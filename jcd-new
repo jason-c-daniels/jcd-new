@@ -6,19 +6,24 @@ export JCD_NEW_VERSION="0.0.1-pre"
 
 main() {
     source "$JCD_NEW_LIBS/jcd-new.bashlib" #include the common library so everything in here can execute.
-    if [[ $1 == version || $1 == help ]]; then
-        bash "$JCD_NEW_LIBS/jcd-new-$1" ${*:2}
+    if [ $# -eq 0 ]; then
+      echo "No arguments provided. Displaying help."
+      bash "$JCD_NEW_LIBS/jcd-new-help"
+      exit 1
+    elif [[ $1 == version || $1 == help ]]; then
+      bash "$JCD_NEW_LIBS/jcd-new-$1" ${*:2}
     else
-        command="$JCD_NEW_LIBS/jcd-new-$1"
+      command="$JCD_NEW_LIBS/jcd-new-$1"
 
-        if [[ -f "$command" ]]; then
-            bash "$command" ${*:2}
-        else
-            echo >&2 "Unknown command: $1."
-            bash "$JCD_NEW_LIBS/jcd-new-help"
-            exit 1
-        fi;
+      if [[ -f "$command" ]]; then
+          bash "$command" ${*:2}
+      else
+          echo >&2 "Unknown command: $1."
+          bash "$JCD_NEW_LIBS/jcd-new-help"
+          exit 1
+      fi;
     fi;
 }
+
 
 main $@

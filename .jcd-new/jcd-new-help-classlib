@@ -1,5 +1,4 @@
 #!/bin/bash
-echo "getting help"
 cat << EOF
 usage:
 jcd-new classlib <options>
