@@ -171,12 +171,14 @@ git branch -M main
 git add .
 git commit -m ".NET Standard $NETSTANDARD_VERSION project created with jcd-new classlib"
 
-if [ -z ${NO_GITHUB+x} ]
+if [ "${NO_GITHUB+x}" == "1" ]
 then
+  echo "--no-github specified. Skipping push to github."
   popd
   exit 0
 fi
 
+echo "Creating the github repository and pushing."
 # Create the github repo and do the initial push
 gh auth login --hostname github.com || true
 gh repo create "$GITHUB_USER_NAME/$PROJECT_NAME" --public --gitignore= --license= -y || true
