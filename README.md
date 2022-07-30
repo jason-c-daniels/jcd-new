@@ -61,6 +61,6 @@ You must have the following environment variables defined:
 
 * $GITHUB_USER_NAME - this is required for generating the correct documentation from various template files.
 
-* $GITHUB_TOKEN - this allows for the gh tool to push code to GitHub.
+* $GITHUB_TOKEN - this allows the gh tool to push code to GitHub.
 
 * $FULL_NAME - this is required for generating the correct documentation from various template files.
