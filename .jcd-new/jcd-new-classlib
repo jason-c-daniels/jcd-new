@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+TEMPLATES="$JCD_NEW_LIBS/templates"
 
 for i in $*; do
 #  echo "Found param: $i"
@@ -49,16 +50,29 @@ then
   exit 1
 fi
 
+if [ -z ${FULL_NAME} ]
+then
+    echo "\$FULL_NAME not specified in the environment. Cannot process $TEMPLATES/LICENSE.template without it. Aborting."
+    exit 1
+fi
+
+if [ -z ${GITHUB_USER_NAME} ]
+then
+    echo "\$GITHUB_USER_NAME not specified in the environment. Cannot process $TEMPLATES/classlib/README.md.template without it. Aborting."
+    exit 1
+fi
+
 #validate that $github has been set and the directory exists
 if [ -z ${github+x} ]
 then
-  echo "\$github variable not set."
+  echo "\$github variable not set. Aborting."
   exit 1;
 fi
+
 # validate that the GITHUB_TOKEN environment variable is set.
 if [ -z ${GITHUB_TOKEN+x} ]
 then
-  echo "\$GITHUB_TOKEN variable not set."
+  echo "\$GITHUB_TOKEN variable not set. Aborting."
   exit 1
 fi
 # validate GITHUB_USER_NAME is set
@@ -96,13 +110,13 @@ curl https://raw.githubusercontent.com/github/gitignore/master/VisualStudio.giti
 curl https://raw.githubusercontent.com/github/gitignore/master/Global/VisualStudioCode.gitignore >> .gitignore
 
 #process a template README.md to generate it.
-cat "$JCD_NEW_LIBS/README.md.template" | \
+cat "$TEMPLATES/classlib/README.md.template" | \
   sed "s/{PROJECT_NAME}/$PROJECT_NAME/g" | \
   sed "s/{GITHUB_USER_NAME}/$GITHUB_USER_NAME/g" \
   > README.md
 
 #process a template LICENSE file to generate it
-cat "$JCD_NEW_LIBS/LICENSE.template" | \
+cat "$TEMPLATES/LICENSE.template" | \
   sed "s/{YEAR}/$YEAR/g" | \
   sed "s/{FULL_NAME}/$FULL_NAME/g" \
   > LICENSE
@@ -170,12 +184,12 @@ echo "
 pushd "$PROJECT_NAME"
 
 echo "Creating NamespaceDoc class with summary comments."
-cat "$JCD_NEW_LIBS/NamespaceDoc.cs.template" | \
+cat "$TEMPLATES/classlib/NamespaceDoc.cs.template" | \
   sed "s/{PROJECT_NAME}/$PROJECT_NAME/g" \
   > NamespaceDoc.cs
 
 echo "Creating Class1 class with summary comments."
-cat "$JCD_NEW_LIBS/Class1.cs.template" | \
+cat "$TEMPLATES/classlib/Class1.cs.template" | \
   sed "s/{PROJECT_NAME}/$PROJECT_NAME/g" \
   > Class1.cs
 
