@@ -1,0 +1,42 @@
+#!/bin/bash
+echo "getting help"
+cat << EOF
+usage:
+jcd-new classlib <options>
+   --project-name=<project-name>    REQUIRED. Specifies the name of the classlib you wish to create.
+
+   --project=<project-name>         An alias for --project-name=
+
+   -p=<project-name>                An alias for --project-name=
+
+   --no-github                      OPTIONAL. Skips the github integration steps.
+
+   -ngh                             An alias for --no-github
+
+   --netstandard-version=<version>  OPTIONAL. Sets the .NET Standard version to use for the library.
+                                    The default is 2.1. Valid options are: 1.0, 1.1, 1.2, 1.3, 1.4, 1.5,
+                                    1.6, 2.0 and 2.1.
+
+   -nvs=<version>                   An alias for --netstandard-version
+
+   --version                        Prints the version of jcd-new in use.
+
+REQUIRED EXTERNAL TOOLS:
+   * gh - This is the github command-line. It's required to automatically upload your code to github.
+          On windows this is available through chocolatey via: choco install gh
+          To install on linux see this document: https://github.com/cli/cli/blob/trunk/docs/install_linux.md
+
+   * dotnet - This is the .NET Core command-line. It's required to create the project structure.
+
+REQUIRED ENVIRONMENT VARIABLES:
+You must have the following environment variables defined:
+  * \$github - must point to the root folder for your personal github repositories.
+
+  * \$GITHUB_USER_NAME - this is required for generating the correct documentation from
+                        various template files.
+
+  * \$GITHUB_TOKEN - this allows for the gh tool to push code to github.
+
+  * \$FULL_NAME - this is required for generating the correct documentation from various
+                 template files.
+EOF

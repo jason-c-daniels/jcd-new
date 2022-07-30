@@ -34,7 +34,7 @@ done
 
 if [ -z ${PROJECT_NAME} ]
 then
-    echo "No project name specified. Please use -p= or --project= to specify the project name."
+    echo "No project name specified. Please use -p=, --project=, or --project-name= to specify the project name."
     exit 1
 fi
 
