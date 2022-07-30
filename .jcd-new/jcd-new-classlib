@@ -3,19 +3,26 @@ set -e
 echo jcd-new classlib running "v$JCD_NEW_VERSION"
 
 for i in $*; do
-  echo $i "--"
+#  echo "Found param: $i"
   case $i in
-    -p=*|--project=*)
-      echo "found project"
+    -p=*|--project=*|--project-name=*)
+      echo "found project name parameter"
       PROJECT_NAME="${i#*=}"
       shift # past argument=value
       ;;
     -ngh|--no-github)
+      echo "found NO_GITHUB flag"
       NO_GITHUB=1
+      shift # past argument
+      ;;
+    -nsv=*|--netstandard-version=*)
+      echo "found NETSTANDARD_VERSION parameter"
+      NETSTANDARD_VERSION="${i#*=}"
       shift # past argument
       ;;
     *)
       # ignore unknown option
+      echo "Ignoring unrecognized parameter: $i"
       shift # past unknown option
       ;;
   esac
@@ -25,6 +32,18 @@ if [ -z ${PROJECT_NAME} ]
 then
     echo "No project name specified. Please use -p= or --project= to specify the project name."
     exit 1
+fi
+
+if [ -z ${NETSTANDARD_VERSION} ]
+then
+    echo ".NET Standard version not specified, defaulting to .NET Standard 2.1"
+    NETSTANDARD_VERSION=2.1
+fi
+
+if [[ "$NETSTANDARD_VERSION" != @(1[.]0|1[.]1|1[.]2|1[.]3|1[.]4|1[.]5|1[.]6|2[.]0|2[.]1) ]]
+then
+  echo "$NETSTANDARD_VERSION is not recognized/supported version of .NET Standard."
+  exit 1
 fi
 
 #validate that $github has been set and the directory exists
@@ -55,7 +74,7 @@ dotnet_ver=$(dotnet --version)
 YEAR=$(date +'%Y')
 
 # TODO: parse other incoming params (if any).
-cd "$github"
+pushd "$github"
 
 #Verify the project doesn't already exist
 if [ -d "./$PROJECT_NAME" ]
@@ -102,11 +121,8 @@ dotnet new console -o "$PROJECT_NAME.Examples"
 dotnet add "$PROJECT_NAME.Examples/$PROJECT_NAME.Examples.csproj" reference "$PROJECT_NAME/$PROJECT_NAME.csproj"
 dotnet sln add "$PROJECT_NAME.Examples/$PROJECT_NAME.Examples.csproj"
 
-git add .
-git commit -m "Project created with jcd-new classlib"
-git branch -M main
-
 #Add README.md to library .csproj file as nuget packable
+sed -i "s/<TargetFramework>netstandard2.1<\/TargetFramework>/<TargetFramework>netstandard$NETSTANDARD_VERSION<\/TargetFramework>/" "$PROJECT_NAME/$PROJECT_NAME.csproj"
 sed -i 's/<\/Project>//' "$PROJECT_NAME/$PROJECT_NAME.csproj"
 echo "
     <PropertyGroup>
@@ -122,7 +138,7 @@ echo "
         <PackageVersion>0.0.1</PackageVersion>
         <AssemblyVersion>0.0.1</AssemblyVersion>
         <FileVersion>0.0.1</FileVersion>
-        <TargetFrameworks>netstandard2.1</TargetFrameworks>
+        <TargetFramework>netstandard$NETSTANDARD_VERSION</TargetFramework>
         <PackageIconUrl>https://s.gravatar.com/avatar/c7e8df18f543ea857ac93660a190df98?s=320</PackageIconUrl>
         <PackageReleaseNotes></PackageReleaseNotes>
     </PropertyGroup>
@@ -133,6 +149,8 @@ echo "
 
     <ItemGroup>
       <None Include=\"..\\README.md\" Pack=\"true\" PackagePath=\"\\\" />
+      <None Include=\"..\\LICENSE\" Pack=\"true\" PackagePath=\"\\\" />
+      <None Include=\"..\\nuget.config\" Pack=\"true\" PackagePath=\"\\\" />
     </ItemGroup>
 
     <PropertyGroup Condition=\" '\$(Configuration)' == 'Debug' \">
@@ -146,8 +164,13 @@ echo "
 </Project>
 " >> "$PROJECT_NAME/$PROJECT_NAME.csproj"
 
+git branch -M main
+git add .
+git commit -m ".NET Standard $NETSTANDARD_VERSION project created with jcd-new classlib"
+
 if [ -z ${NO_GITHUB+x} ]
 then
+  popd
   exit 0
 fi
 
@@ -155,3 +178,4 @@ fi
 gh auth login --hostname github.com || true
 gh repo create "$GITHUB_USER_NAME/$PROJECT_NAME" --public --gitignore= --license= -y || true
 git push -u origin main || true
+popd
