@@ -13,7 +13,7 @@ A short project description goes here
   * On the Settings/General tab
     - Set your build version (typically to 0.0.{build} for a new project.)
     - Turn on AssemblyInfo patching.
-    - Turn on .NET Core project fils patching.
+    - Turn on .NET Core project files patching.
   * On the Settings/Environment tab, select the Ubuntu build worker image to ensure unit tests run on Linux.
   * On the Settings/Build tab
     - Set "Configuration" to "Release"
