@@ -44,17 +44,16 @@ echo "${PATH//:/$'\n'}" | sort -u
 echo "${PATH//:/$'\n'}" | sort -u | grep -v "$HOME"
 ```
 
-## Usage Notes for jcd-new classlib
-
-REQUIRED EXTERNAL TOOLS:
+## Required External Tools
 
 * gh - This is the GitHub command-line. It's required to automatically upload your code to GitHub.
   On Windows this is available through chocolatey via: ```choco install gh```
   To install on linux see this document: https://github.com/cli/cli/blob/trunk/docs/install_linux.md
 
-* dotnet - This is the .NET Core command-line. It's required to create the project structure.
+* dotnet - This is the .NET Core command-line. It's required to create the project structure. 
+  See [Microsoft's page](https://dotnet.microsoft.com/en-us/download) for installation instructions.
 
-REQUIRED ENVIRONMENT VARIABLES:
+## Required Environment Variables
 
 You must have the following environment variables defined:
 * $github - must point to the root folder for your personal GitHub repositories.
