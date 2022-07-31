@@ -30,7 +30,18 @@ jcd-new help classlib
 
 ## Installation
 
-Copy this folder structure to any folder in bash's PATH.
+### Option 1: Run `install.sh`
+```bash
+cd $THIS_GIT_REPO
+
+# install to ~/bin
+bash ./install.sh
+
+# install to /usr/bin (you need to be be in a superuser shell for this to work)
+bash ./install.sh /usr/bin
+```
+
+### Option 2: Manually copy this folder structure to any folder in bash's PATH and set the executable flag on all the scripts.
 
 To find a suitable location you can execute one of the following commands.
 ```bash
@@ -42,7 +53,13 @@ echo "${PATH//:/$'\n'}" | sort -u
 
 # List all PATH locations excluding your HOME directory (all of these will require admin privileges) 
 echo "${PATH//:/$'\n'}" | sort -u | grep -v "$HOME"
+
+# set the executable flag
+cd $PATH_TO_JCD_NEW
+chmmod u+x ./jcd-new
+chmmod u+x ./.jcd-new/jcd-new*
 ```
+
 
 ## Required External Tools
 
