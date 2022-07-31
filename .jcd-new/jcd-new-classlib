@@ -219,6 +219,7 @@ echo "Creating the github repository and pushing."
 # Create the github repo and do the initial push
 gh auth login --hostname github.com || true
 gh repo create "$GITHUB_USER_NAME/$PROJECT_NAME" --public --gitignore= --license= -y || true
+git remote add origin "https://github.com/$GITHUB_USER_NAME/$PROJECT_NAME.git"
 git push -u origin main || true
 
 # always popd as a final step before exiting.
