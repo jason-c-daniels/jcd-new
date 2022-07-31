@@ -8,7 +8,7 @@ jcd-new classlib <options>
 
    -p=<project-name>                An alias for --project-name=
 
-   --no-github                      OPTIONAL. Skips the github integration steps.
+   --no-github                      OPTIONAL. If specified, skips the github integration steps.
 
    -ngh                             An alias for --no-github
 

@@ -1,9 +1,12 @@
 #!/bin/bash
 set -e
-TEMPLATES="$JCD_NEW_LIBS/templates"
+if [ $# -eq 0 ]; then
+  echo "No arguments provided to jcd-new classlib. Displaying help."
+  bash "$JCD_NEW_LIBS/jcd-new-help-classlib"
+  exit 1
+fi
 
 for i in $*; do
-#  echo "Found param: $i"
   case $i in
     -p=*|--project=*|--project-name=*)
       echo "found project name parameter"
@@ -32,13 +35,13 @@ for i in $*; do
   esac
 done
 
-if [ -z ${PROJECT_NAME} ]
+if [ -z ${PROJECT_NAME+x} ]
 then
     echo "No project name specified. Please use -p=, --project=, or --project-name= to specify the project name."
     exit 1
 fi
 
-if [ -z ${NETSTANDARD_VERSION} ]
+if [ -z ${NETSTANDARD_VERSION+x} ]
 then
     echo ".NET Standard version not specified, defaulting to .NET Standard 2.1"
     NETSTANDARD_VERSION=2.1
@@ -52,13 +55,13 @@ fi
 
 if [ -z ${FULL_NAME+x} ]
 then
-    echo "\$FULL_NAME not specified in the environment. Cannot process $TEMPLATES/LICENSE.template without it. Aborting."
+    echo "\$FULL_NAME not specified in the environment. Cannot process $JCD_NEW_TEMPLATES/LICENSE.template without it. Aborting."
     exit 1
 fi
 
 if [ -z ${GITHUB_USER_NAME+x} ]
 then
-    echo "\$GITHUB_USER_NAME not specified in the environment. Cannot process $TEMPLATES/classlib/README.md.template without it. Aborting."
+    echo "\$GITHUB_USER_NAME not specified in the environment. Cannot process $JCD_NEW_TEMPLATES/classlib/README.md.template without it. Aborting."
     exit 1
 fi
 
@@ -84,13 +87,15 @@ fi
 
 # validate that the gh tool is installed
 gh_ver=$(gh --version)
+echo "gh version $gh_ver detected."
+
 # validate that the dotnet command line is installed
 dotnet_ver=$(dotnet --version)
+echo "dotnet version $dotnet_ver detected."
 
 # capture some data
 YEAR=$(date +'%Y')
 
-# TODO: parse other incoming params (if any).
 pushd "$github"
 
 #Verify the project doesn't already exist
@@ -114,13 +119,14 @@ curl https://raw.githubusercontent.com/github/gitignore/master/VisualStudio.giti
 curl https://raw.githubusercontent.com/github/gitignore/master/Global/VisualStudioCode.gitignore >> .gitignore
 
 #process a template README.md to generate it.
-cat "$TEMPLATES/classlib/README.md.template" | \
+cat "$JCD_NEW_TEMPLATES/classlib/README.md.template" | \
   sed "s/{PROJECT_NAME}/$PROJECT_NAME/g" | \
+  sed "s/{NETSTANDARD_VERSION}/$NETSTANDARD_VERSION/g" | \
   sed "s/{GITHUB_USER_NAME}/$GITHUB_USER_NAME/g" \
   > README.md
 
 #process a template LICENSE file to generate it
-cat "$TEMPLATES/LICENSE.template" | \
+cat "$JCD_NEW_TEMPLATES/LICENSE.template" | \
   sed "s/{YEAR}/$YEAR/g" | \
   sed "s/{FULL_NAME}/$FULL_NAME/g" \
   > LICENSE
@@ -188,12 +194,12 @@ echo "
 pushd "$PROJECT_NAME"
 
 echo "Creating NamespaceDoc class with summary comments."
-cat "$TEMPLATES/classlib/NamespaceDoc.cs.template" | \
+cat "$JCD_NEW_TEMPLATES/classlib/NamespaceDoc.cs.template" | \
   sed "s/{PROJECT_NAME}/$PROJECT_NAME/g" \
   > NamespaceDoc.cs
 
 echo "Creating Class1 class with summary comments."
-cat "$TEMPLATES/classlib/Class1.cs.template" | \
+cat "$JCD_NEW_TEMPLATES/classlib/Class1.cs.template" | \
   sed "s/{PROJECT_NAME}/$PROJECT_NAME/g" \
   > Class1.cs
 
@@ -222,6 +228,6 @@ gh repo create "$GITHUB_USER_NAME/$PROJECT_NAME" --public --gitignore= --license
 git remote add origin "https://github.com/$GITHUB_USER_NAME/$PROJECT_NAME.git"
 git push -u origin main || true
 
-# always popd as a final step before exiting.
+# always pop the directory as a final step before exiting.
 popd
 exit 0

@@ -31,18 +31,7 @@ jcd-new help classlib
 
 ## Installation
 
-### Option 1: Run `install.sh`
-```bash
-cd $THIS_GIT_REPO
-
-# install to ~/bin
-bash ./install.sh
-
-# install to /usr/bin (you need to be be in a superuser shell for this to work)
-bash ./install.sh /usr/bin
-```
-
-### Option 2: Manually copy this folder structure to any folder in bash's PATH and set the executable flag on all the scripts.
+### First find a suitable installation location
 
 To find a suitable location you can execute one of the following commands.
 ```bash
@@ -54,13 +43,34 @@ echo "${PATH//:/$'\n'}" | sort -u
 
 # List all PATH locations excluding your HOME directory (all of these will require admin privileges) 
 echo "${PATH//:/$'\n'}" | sort -u | grep -v "$HOME"
-
-# set the executable flag
-cd $PATH_TO_JCD_NEW
-chmmod u+x ./jcd-new
-chmmod u+x ./.jcd-new/jcd-new*
 ```
 
+
+### Option 1: Run `install.sh`
+```bash
+# $THIS_GIT_REPO needs to be set to the directory where you cloned this repository, or you can manually substitute the correct value.
+cd $THIS_GIT_REPO
+
+# install to ~/bin
+bash ./install.sh
+
+# install to /usr/bin (you need to be in a superuser shell for this to work)
+bash ./install.sh /usr/bin
+```
+
+### Option 2: Manually copy this folder structure to any folder in bash's PATH and set the executable flag on all the scripts.
+
+```bash
+# The destination dir ($PATH_TO_JCD_NEW) needs to be set, and a valid directory, or you can manually substitute a valid directory location.
+# The source dir ($THIS_GIT_REPO) needs to be set to the location of where you cloned this repository, or you can manually substitute the correct location.
+
+# copy the code to the destination path.
+cp -TRv "$THIS_GIT_REPO/.jcd-new/" "$PATH_TO_JCD_NEW/.jcd-new/"
+cp "$THIS_GIT_REPO/jcd-new" "$PATH_TO_JCD_NEW"
+
+# set the executable flag on jcd-new
+chmod u+x "$PATH_TO_JCD_NEW/jcd-new"
+```
 
 ## Required External Tools
 
@@ -81,3 +91,33 @@ You must have the following environment variables defined:
 * $GITHUB_TOKEN - is required for the gh tool to push code to GitHub.
 
 * $FULL_NAME - is required for generating the correct documentation from various template files.
+
+## Advice for the first time you run jcd-new.
+
+If you're not sure if you'll like the output from jcd-new classlib, do a dry run locally without pushing to GitHub.
+To do that pass the --no-github (-ngh) flag.
+```bash
+# An example of what that might look like follows:
+jcd-new classlib --no-githhub --project-name=My.Test.Project
+```
+After generating your test project, inspect the output to see if it's what you desire. Don't just open the solution in
+your IDE and verify it compiles (It should have as part of the project creation.) Actually read the text contents of the
+.csproj files. Ensure they contain exactly what you want and/or expected.
+
+## Why did I use bash instead of the built-in templating features in `dotnet new`?
+
+*Simply put: Familiarity, control, simplicity, and cross-platform compatibility concerns.*
+
+Much of what I do in these scripts just is unsuitable for a `dotnet new` template, thus requiring wrapper script to call
+the custom `dotnet new` template. That template would have to be independently maintained as a nuget package. This would 
+complicate the whole process. I have no want for that complexity. 
+
+On top of that, the wrapper script would have been so remarkably similar to what I currently have (i.e. netstandard1.0 
+post-processing would still be required) making the whole exercise a moot point and more time-consuming. Instead, I chose
+to execute the `dotnet` command-line to achieve the same results.
+
+Don't get me wrong tho, the `dotnet new` templating engine is quite impressive and VERY useful. It's just not appropriate 
+for this use case at this time.
+
+Finally, these scripts are for my own personal use. They're shared on GitHub just in case others might take inspiration 
+from them, or perhaps even find them directly useful. 

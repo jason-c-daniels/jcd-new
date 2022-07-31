@@ -1,0 +1,14 @@
+#!/bin/bash
+cat << EOF
+usage:
+jcd-new locations
+
+    This lists the directory locations jcd-new is currently using. This is used for install location debugging.
+
+Example run:
+$ jcd-new locations
+jcd-new root dir: /home/AUserDir/bin
+jcd-new libs dir: /home/AUserDir/bin/.jcd-new
+jcd-new templates root dir: /home/AUserDir/bin/.jcd-new/templates
+
+EOF

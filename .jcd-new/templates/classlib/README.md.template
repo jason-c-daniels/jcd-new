@@ -1,13 +1,12 @@
 # {PROJECT_NAME}
+
 A short project description goes here
 
-## Examples
-```csharp
-// snippets of code from the examples project goes here.
-```
+*A .NET Standard {NETSTANDARD_VERSION} class library.*
 
-# Before you begin coding
-1. If you didn't push to github as part of the project creation, you'll need to do so before setting up the AppVeyor and codefactor links
+## Before you begin coding
+
+1. If you didn't push to github as part of the project creation, you'll need to do so before setting up the AppVeyor and codefactor.io links
 2. Setup the [AppVeyor project](https://ci.appveyor.com/projects) and replace TODO_YOUR_PROJECT_SLUG_HERE, in this file, with the project slug.
   * The project slug can be found in the URL of the project after creation or on the Settings/General tab.
   * On the Settings/General tab
@@ -28,8 +27,13 @@ A short project description goes here
   * Click "Import" at the bottom of the screen.
 4. Delete this section of the this file and replace it with something meaningful.
 
+## Examples
 
+```csharp
+// snippets of code from the examples project goes here.
+```
 
+## Badges
 [![GitHub](https://img.shields.io/github/license/{GITHUB_USER_NAME}/{PROJECT_NAME})](https://github.com/{GITHUB_USER_NAME}/{PROJECT_NAME}/blob/main/LICENSE)
 [![Build status](https://ci.appveyor.com/api/projects/status/sbmfvmr1jmcf1pic?svg=true)](https://ci.appveyor.com/project/{GITHUB_USER_NAME}/TODO_YOUR_PROJECT_SLUG_HERE)
 [![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/{GITHUB_USER_NAME}/{PROJECT_NAME})](https://www.codefactor.io/repository/github/{GITHUB_USER_NAME}/{PROJECT_NAME})

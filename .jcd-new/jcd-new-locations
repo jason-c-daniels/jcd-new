@@ -1,0 +1,4 @@
+#!/bin/bash
+echo "jcd-new root dir: $JCD_NEW_ROOT"
+echo "jcd-new libs dir: $JCD_NEW_LIBS"
+echo "jcd-new templates root dir: $JCD_NEW_TEMPLATES"
