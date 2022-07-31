@@ -19,6 +19,7 @@ jcd-new classlib -p=Jcd.Delete.Me5 -ngh
 
 # Display the version number for jcd-new
 jcd-new version
+jcd-new --version
 jcd-new classlib --version
 
 # Get help on using jcd-new

@@ -2,7 +2,7 @@
 set -e
 export JCD_NEW_ROOT=$(dirname $(readlink -f $0))
 export JCD_NEW_LIBS=$JCD_NEW_ROOT/.jcd-new
-export JCD_NEW_VERSION="0.0.1-pre"
+export JCD_NEW_VERSION="0.0.2"
 
 main() {
     source "$JCD_NEW_LIBS/jcd-new.bashlib" #include the common library so everything in here can execute.
@@ -10,8 +10,10 @@ main() {
       echo "No arguments provided. Displaying help."
       bash "$JCD_NEW_LIBS/jcd-new-help"
       exit 1
-    elif [[ $1 == version || $1 == help ]]; then
-      bash "$JCD_NEW_LIBS/jcd-new-$1" ${*:2}
+    elif [[ $1 == "--version" ]]; then
+      bash "$JCD_NEW_LIBS/jcd-new-version" ${*:2}
+#    elif [[ $1 == version || $1 == help || $1 == "--version" ]]; then
+#      bash "$JCD_NEW_LIBS/jcd-new-$1" ${*:2}
     else
       command="$JCD_NEW_LIBS/jcd-new-$1"
 

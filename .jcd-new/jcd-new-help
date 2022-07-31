@@ -23,7 +23,12 @@ For more details on the individual commands type jcd-new help [command]
 List of commands:
 classlib   : creates a new .NET Standard class library.
 
-help        : Displays this help information.
+version    : Display the version number.
+
+--version  : And alias for version.
+
+help       : Displays this help information.
+
 EOF
 else
     #( export GIT_VER_VERSION; "JCD_NEW_DIR/jcd-new-help-$1" 2>&1 /dev/null || { echo >&2 "Cannot find help for command: $1."; exit 1; } )
