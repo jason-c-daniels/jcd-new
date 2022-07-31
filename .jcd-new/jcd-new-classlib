@@ -102,9 +102,13 @@ fi
 echo Creating project "$PROJECT_NAME"
 dotnet new sln -o "$PROJECT_NAME"
 cd "./$PROJECT_NAME"
+echo "Initializing git repository"
 git init
 
+echo "Adding empty .gitignore"
 touch .gitignore
+
+
 curl https://raw.githubusercontent.com/github/gitignore/master/Global/JetBrains.gitignore >> .gitignore
 curl https://raw.githubusercontent.com/github/gitignore/master/VisualStudio.gitignore >> .gitignore
 curl https://raw.githubusercontent.com/github/gitignore/master/Global/VisualStudioCode.gitignore >> .gitignore
@@ -194,12 +198,15 @@ cat "$TEMPLATES/classlib/Class1.cs.template" | \
   > Class1.cs
 
 popd
+
 echo "Performing initial build of $PROJECT_NAME to generate documentation stub."
 dotnet build
 
-git branch -M main
 git add .
 git commit -m ".NET Standard $NETSTANDARD_VERSION project created with jcd-new classlib"
+
+echo "Setting main branch name"
+git branch -M main
 
 if [ "$NO_GITHUB" == "1" ]
 then
