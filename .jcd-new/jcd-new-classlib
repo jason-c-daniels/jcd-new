@@ -50,13 +50,13 @@ then
   exit 1
 fi
 
-if [ -z ${FULL_NAME} ]
+if [ -z ${FULL_NAME+x} ]
 then
     echo "\$FULL_NAME not specified in the environment. Cannot process $TEMPLATES/LICENSE.template without it. Aborting."
     exit 1
 fi
 
-if [ -z ${GITHUB_USER_NAME} ]
+if [ -z ${GITHUB_USER_NAME+x} ]
 then
     echo "\$GITHUB_USER_NAME not specified in the environment. Cannot process $TEMPLATES/classlib/README.md.template without it. Aborting."
     exit 1
