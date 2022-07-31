@@ -1,6 +1,6 @@
-# jcd-new
+# `jcd-new`
 
-A set of bash scripts and file templates to help me manage creating various dotnet solution structures.
+A set of bash scripts and file templates to help create various dotnet solution structures. *(Currently just class libraries)*
 
 ## Examples
 ```bash
@@ -29,7 +29,7 @@ jcd-new help
 jcd-new help classlib
 ```
 
-## Installation
+## Installation from this GitHub repository.
 
 ### First find a suitable installation location
 
@@ -45,31 +45,19 @@ echo "${PATH//:/$'\n'}" | sort -u
 echo "${PATH//:/$'\n'}" | sort -u | grep -v "$HOME"
 ```
 
-
-### Option 1: Run `install.sh`
+### Next run `install.sh` from the src directory of your clone of this repository
 ```bash
 # $THIS_GIT_REPO needs to be set to the directory where you cloned this repository, or you can manually substitute the correct value.
-cd $THIS_GIT_REPO
+cd $THIS_GIT_REPO/src
 
 # install to ~/bin
 bash ./install.sh
 
-# install to /usr/bin (you need to be in a superuser shell for this to work)
-bash ./install.sh /usr/bin
-```
+# install to ~/bin2 (which will need to already exist.)
+bash ./install.sh ~/bin2
 
-### Option 2: Manually copy this folder structure to any folder in bash's PATH and set the executable flag on all the scripts.
-
-```bash
-# The destination dir ($PATH_TO_JCD_NEW) needs to be set, and a valid directory, or you can manually substitute a valid directory location.
-# The source dir ($THIS_GIT_REPO) needs to be set to the location of where you cloned this repository, or you can manually substitute the correct location.
-
-# copy the code to the destination path.
-cp -TRv "$THIS_GIT_REPO/.jcd-new/" "$PATH_TO_JCD_NEW/.jcd-new/"
-cp "$THIS_GIT_REPO/jcd-new" "$PATH_TO_JCD_NEW"
-
-# set the executable flag on jcd-new
-chmod u+x "$PATH_TO_JCD_NEW/jcd-new"
+# Now verify the installation worked
+jcd-new --version
 ```
 
 ## Required External Tools
