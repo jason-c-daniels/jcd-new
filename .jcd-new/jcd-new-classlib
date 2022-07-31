@@ -143,7 +143,7 @@ dotnet add "$PROJECT_NAME.Examples/$PROJECT_NAME.Examples.csproj" reference "$PR
 dotnet sln add "$PROJECT_NAME.Examples/$PROJECT_NAME.Examples.csproj"
 
 #Set netstandard version. Add README.md, nuget.config and LICENSE to library .csproj file
-sed -i "s/<TargetFramework>netstandard2.1<\/TargetFramework>/<TargetFramework>netstandard$NETSTANDARD_VERSION<\/TargetFramework>/" "$PROJECT_NAME/$PROJECT_NAME.csproj"
+sed -i "s/<TargetFramework>netstandard2.1<\/TargetFramework>/<TargetFramework>netstandard$NETSTANDARD_VERSION<\/TargetFramework>\n    <LangVersion>8<\/LangVersion>/" "$PROJECT_NAME/$PROJECT_NAME.csproj"
 sed -i 's/<\/Project>//' "$PROJECT_NAME/$PROJECT_NAME.csproj"
 echo "
     <PropertyGroup>
