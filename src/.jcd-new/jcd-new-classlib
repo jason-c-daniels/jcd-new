@@ -1,4 +1,5 @@
 #!/bin/bash
+source "$JCD_NEW_LIBS/jcd-new.bashlib"
 set -e
 if [ $# -eq 0 ]; then
   echo "No arguments provided to jcd-new classlib. Displaying help."
@@ -118,18 +119,22 @@ curl https://raw.githubusercontent.com/github/gitignore/master/Global/JetBrains.
 curl https://raw.githubusercontent.com/github/gitignore/master/VisualStudio.gitignore >> .gitignore
 curl https://raw.githubusercontent.com/github/gitignore/master/Global/VisualStudioCode.gitignore >> .gitignore
 
-#process a template README.md to generate it.
-cat "$JCD_NEW_TEMPLATES/classlib/README.md.template" | \
-  sed "s/{PROJECT_NAME}/$PROJECT_NAME/g" | \
-  sed "s/{NETSTANDARD_VERSION}/$NETSTANDARD_VERSION/g" | \
-  sed "s/{GITHUB_USER_NAME}/$GITHUB_USER_NAME/g" \
-  > README.md
-
-#process a template LICENSE file to generate it
-cat "$JCD_NEW_TEMPLATES/LICENSE.template" | \
-  sed "s/{YEAR}/$YEAR/g" | \
-  sed "s/{FULL_NAME}/$FULL_NAME/g" \
-  > LICENSE
+echo "Creating README.md"
+process_template "$JCD_NEW_TEMPLATES/classlib/README.md.template" "./README.md"
+echo "Creating PULL_REQUEST_TEMPLATE.md"
+process_template "$JCD_NEW_TEMPLATES/PULL_REQUEST_TEMPLATE.md.template" "./PULL_REQUEST_TEMPLATE.md"
+echo "Creating CONTRIBUTING.md"
+process_template "$JCD_NEW_TEMPLATES/CONTRIBUTING.md.template" "./CONTRIBUTING.md"
+echo "Creating CODE_OF_CONDUCT.md"
+process_template "$JCD_NEW_TEMPLATES/CODE_OF_CONDUCT.md.template" "./CODE_OF_CONDUCT.md"
+echo "Creating .github/FUNDING.yml"
+process_template "$JCD_NEW_TEMPLATES/.github/FUNDING.yml.template" ".github/FUNDING.yml"
+echo "Creating .github/ISSUE_TEMPLATE/feature_request.md"
+process_template "$JCD_NEW_TEMPLATES/.github/ISSUE_TEMPLATE/feature_request.md.template" ".github/ISSUE_TEMPLATE/feature_request.md"
+echo "Creating .github/ISSUE_TEMPLATE/bug_report.md"
+process_template "$JCD_NEW_TEMPLATES/.github/ISSUE_TEMPLATE/bug_report.md.template" ".github/ISSUE_TEMPLATE/bug_report.md"
+echo "Creating LICENSE"
+process_template "$JCD_NEW_TEMPLATES/LICENSE.template" "./LICENSE"
 
 #TODO: create a template nuget.config and use that instead.
 dotnet new nugetconfig
@@ -194,14 +199,10 @@ echo "
 pushd "$PROJECT_NAME"
 
 echo "Creating NamespaceDoc class with summary comments."
-cat "$JCD_NEW_TEMPLATES/classlib/NamespaceDoc.cs.template" | \
-  sed "s/{PROJECT_NAME}/$PROJECT_NAME/g" \
-  > NamespaceDoc.cs
+process_template "$JCD_NEW_TEMPLATES/classlib/NamespaceDoc.cs.template" "NamespaceDoc.cs"
 
 echo "Creating Class1 class with summary comments."
-cat "$JCD_NEW_TEMPLATES/classlib/Class1.cs.template" | \
-  sed "s/{PROJECT_NAME}/$PROJECT_NAME/g" \
-  > Class1.cs
+process_template "$JCD_NEW_TEMPLATES/classlib/Class1.cs.template" "Class1.cs"
 
 popd
 

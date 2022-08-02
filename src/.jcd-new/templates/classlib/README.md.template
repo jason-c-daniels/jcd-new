@@ -1,8 +1,6 @@
 # {PROJECT_NAME}
 
-A short project description goes here
-
-*A .NET Standard {NETSTANDARD_VERSION} class library.*
+A *.NET Standard {NETSTANDARD_VERSION}* library that provides **a description of what features/classes/services the library provides goes here.**
 
 ## Before you begin coding
 

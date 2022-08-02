@@ -7,6 +7,7 @@ export JCD_NEW_VERSION=$(<"$JCD_NEW_LIBS/VERSION")
 
 main() {
     source "$JCD_NEW_LIBS/jcd-new.bashlib" #include the common library so everything in here can execute common functions.
+    export process_template
     if [ $# -eq 0 ]; then
       echo "No arguments provided. Displaying help."
       bash "$JCD_NEW_LIBS/jcd-new-help"
