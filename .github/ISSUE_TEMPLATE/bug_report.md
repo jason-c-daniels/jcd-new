@@ -1,35 +1,45 @@
 ---
-name: Bug report
+name: Bug Report
 about: Create a report to help drive improvements
 
 ---
 
-**Describe the bug**
+### Bug Description
+
 A clear and concise description of what the bug is.
 
-**To Reproduce**
-Steps to reproduce the behavior:
+### (OPTIONAL) Data Setup/Scenario Description
+
+A description of where/how to begin reproducing the bug. (i.e. In order to successfully reproduce the issue,
+what state does the shell need to be in? For example: Set GITHUB_TOKEN to a bad value...etc.) 
+
+### Steps To Reproduce
+
+*List the steps to Reproduce the behavior:*
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
-4. See error
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+### Observed Results
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+A clear and concise description of the results from executing the Steps to Reproduce. 
+
+### Expected Results
+
+A clear and concise description of what you expected to happen instead.
+
+
+### Console Output/Log Files
+
+If applicable, add console output/log files to help explain the problem.
 
 **Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+ - OS: [e.g. Debian 10, Windows 11]
+ - Subsystem: [e.g. MSYS2, Git Bash, WSL2]
+ - Shell: [e.g. bash, zsh ]
+ - Version: [e.g. 0.0.3-alpha]
 
-**Additional context**
+### Additional Context
+
 Add any other context about the problem here.
