@@ -80,6 +80,40 @@ You must have the following environment variables defined:
 
 * $FULL_NAME - is required for generating the correct documentation from various template files.
 
+## Optional, But Useful, Environment Variables 
+
+While you don't need to have the following environment variables defined, they can be helpful:
+
+* $KOFI_ID - This is your id on ko-fi.com, assuming you have one. If not provide this entry in .github/FUNDING.yml will be blank.
+  If you don't want to solicit any funding, remove .github/FUNDING.yml after the project is created.
+* $PATREON_ID - This is your id on patreon.com, assuming you have one. If not this entry in .github/FUNDING.yml will be blank.
+  If you don't want to solicit any funding, remove .github/FUNDING.yml after the project is created.
+* $PROJECT_EMAIL - This is the email address where you want people to contact you at regarding this project.
+  If it's not provided the following will be used: project.email@not.a.real.domain.org; edit CODE_OF_CONDUCT.md
+  to remove references to it if you do not want people to contact you via email for the project.
+
+## Setting your environment variables
+First off, yes, I know, passing the GITHUB_TOKEN in an environment variable isn't secure.
+* **Don't use these scripts for anything sensitive you're working on.**
+* **If you don't want to use the GITHUB_TOKEN environment variable, don't use these scripts** ...until I find a suitable 
+  replacement method.
+
+To set the non-sensitive environment variables edit your ~/.bash_profile and add them in a 
+manner similar to the script below.
+```bash
+export github=~/Source/your--personal-github-folder # I keep mine separate from others' for personal edification. 
+export FULL_NAME="Your Full Name" # or at least how you want it to appear in the LICENSE file.
+export GITHUB_USER_NAME=your-github-name
+export KOFI_ID=yourkofiname
+export PATREON_ID=yourpatreonname
+export PROJECT_EMAIL=your.oss.email@some.email.com
+```
+
+Of course, you could set them every time before you run these scripts, but that would be... odd.
+
+For your GITHUB_TOKEN, you can research secrets managers use those to launch these scripts, 
+and have it set only for the duration of their run. They're not cheap tho. 
+
 ## Advice for the first time you run jcd-new.
 
 If you're not sure if you'll like the output from jcd-new classlib, do a dry run locally without pushing to GitHub.

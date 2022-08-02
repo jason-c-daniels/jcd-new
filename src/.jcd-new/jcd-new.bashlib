@@ -1,2 +1,57 @@
 #!/bin/bash
 # TODO: put reusable functions here and export them
+process_template() {
+  local template_file="$1"
+  local output_file="$2"
+  local out_dir=$(dirname "$output_file")
+
+  # check if we need to put defaults in for any of the params.
+  if [ -z ${PROJECT_NAME+x} ]
+  then
+    PROJECT_NAME="A.Bad.Project.Name.Fix.The.Scripts"
+  fi
+
+  if [ -z ${GITHUB_USER_NAME+x} ]; then
+    GITHUB_USER_NAME="not-your-github-username-fix-your-environment-variables"
+  fi
+
+  if [ -z ${NETSTANDARD_VERSION+x} ]; then
+    NETSTANDARD_VERSION="2.1" #hopefully this won't cause a problem...
+  fi
+
+  if [ -z ${PROJECT_EMAIL+x} ]; then
+    PROJECT_EMAIL="project.email@not.a.real.domain.org"
+  fi
+
+  if [ -z ${PATREON_ID+x} ]; then
+    PATREON_ID="" # Not sure this really matters. But let's be specific anyways.
+  fi
+
+  if [ -z ${KOFI_ID+x} ]; then
+    KOFI_ID="" # Not sure this really matters. But let's be specific anyways.
+  fi
+
+  if [ -z ${YEAR+x} ]; then
+    YEAR=$(date +"Y")
+  fi
+
+  if [ -z ${FULL_NAME+x} ]; then
+    FULL_NAME="Not A Real Name"
+  fi
+
+  mkdir -p "$out_dir"
+
+  # finally process the template making the required substitutions.
+  cat < "$template_file" | \
+    sed "s/{PROJECT_NAME}/$PROJECT_NAME/g" | \
+    sed "s/{NETSTANDARD_VERSION}/$NETSTANDARD_VERSION/g" | \
+    sed "s/{GITHUB_USER_NAME}/$GITHUB_USER_NAME/g" | \
+    sed "s/{PROJECT_EMAIL}/$PROJECT_EMAIL/g" | \
+    sed "s/{PATREON_ID}/$PATREON_ID/g" | \
+    sed "s/{KOFI_ID}/$KOFI_ID/g" | \
+    sed "s/{YEAR}/$YEAR/g" | \
+    sed "s/{FULL_NAME}/$FULL_NAME/g" \
+    > "$output_file"
+}
+
+export process_template
