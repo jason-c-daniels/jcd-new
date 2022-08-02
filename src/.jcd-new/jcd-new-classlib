@@ -121,18 +121,31 @@ curl https://raw.githubusercontent.com/github/gitignore/master/Global/VisualStud
 
 echo "Creating README.md"
 process_template "$JCD_NEW_TEMPLATES/classlib/README.md.template" "./README.md"
+
 echo "Creating PULL_REQUEST_TEMPLATE.md"
 process_template "$JCD_NEW_TEMPLATES/PULL_REQUEST_TEMPLATE.md.template" "./PULL_REQUEST_TEMPLATE.md"
+
 echo "Creating CONTRIBUTING.md"
 process_template "$JCD_NEW_TEMPLATES/CONTRIBUTING.md.template" "./CONTRIBUTING.md"
+
 echo "Creating CODE_OF_CONDUCT.md"
 process_template "$JCD_NEW_TEMPLATES/CODE_OF_CONDUCT.md.template" "./CODE_OF_CONDUCT.md"
+
 echo "Creating .github/FUNDING.yml"
 process_template "$JCD_NEW_TEMPLATES/.github/FUNDING.yml.template" ".github/FUNDING.yml"
+
 echo "Creating .github/ISSUE_TEMPLATE/feature_request.md"
 process_template "$JCD_NEW_TEMPLATES/.github/ISSUE_TEMPLATE/feature_request.md.template" ".github/ISSUE_TEMPLATE/feature_request.md"
+
 echo "Creating .github/ISSUE_TEMPLATE/bug_report.md"
 process_template "$JCD_NEW_TEMPLATES/.github/ISSUE_TEMPLATE/bug_report.md.template" ".github/ISSUE_TEMPLATE/bug_report.md"
+
+echo "Creating .github/ISSUE_TEMPLATE/technical_task.md"
+process_template "$JCD_NEW_TEMPLATES/.github/ISSUE_TEMPLATE/technical_task.md.template" ".github/ISSUE_TEMPLATE/technical_task.md"
+
+echo "Creating .github/ISSUE_TEMPLATE/user_story.md"
+process_template "$JCD_NEW_TEMPLATES/.github/ISSUE_TEMPLATE/user_story.md.template" ".github/ISSUE_TEMPLATE/user_story.md"
+
 echo "Creating LICENSE"
 process_template "$JCD_NEW_TEMPLATES/LICENSE.template" "./LICENSE"
 
