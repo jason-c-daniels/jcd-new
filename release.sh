@@ -5,12 +5,14 @@ set -e
 # get the location where this script is running from.
 # shellcheck disable=SC2046
 THIS_DIR=$(dirname $(readlink -f "$0"))
-
-# resolve the full destination path.
-DEST_DIR=$(realpath "$1")
+export THIS_DIR
 
 # if no destination specified notify the user the current directory will be used.
+DEST_DIR="$1"
 [ "$DEST_DIR" == "" ] && echo "No destination directory specified, assuming current directory" && DEST_DIR="$THIS_DIR"
+
+# resolve the full destination path.
+DEST_DIR=$(realpath "$DEST_DIR")
 
 # read the current app version.
 VERSION=$(<"$THIS_DIR/src/.jcd-new/VERSION")
