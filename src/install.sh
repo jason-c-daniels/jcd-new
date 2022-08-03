@@ -15,10 +15,11 @@ DEST_DIR="$1"
 case :$PATH: # notice colons around the value
   in *:$DEST_DIR:*) ;; # do nothing, it's there
      *) # warn the user that the destination isn't in the PATH
-        echo "WARNING: $DEST_DIR not in the PATH" >&2
+        echo "WARNING: '$DEST_DIR' is not currently in your PATH."
+        echo "You will need to add it to your PATH before being able to execute the scripts."
         while true; do
           # Prompt to continue or exit. Only accept Y/N/Yes/No (enter is considered N) as answers.
-          read -r -p "Do you wish to continue [yN]?" yn
+          read -r -p "Do you want to continue [yN]?" yn
           case $yn in
               # Yes specified. Break from the loop.
               [Yy]|[Yy][Ee][Ss]) echo "'Yes' selected. Proceeding with the installation to '$DEST_DIR'" && break;;
