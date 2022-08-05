@@ -3,7 +3,7 @@
 set -e
 
 # get the location where this script is running from.
-THIS_DIR=$(dirname $(readlink -f "$0"))
+THIS_DIR=$(dirname "$(readlink -f "$0")")
 
 # if no destination specified notify the user the current directory will be used.
 DEST_DIR="$1"
