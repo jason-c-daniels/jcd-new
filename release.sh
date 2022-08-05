@@ -14,6 +14,8 @@ DEST_DIR=$(realpath "$DEST_DIR")
 
 # read the current app version.
 VERSION=$(<"$THIS_DIR/src/.jcd-new/VERSION")
+# shellcheck disable=SC2001
+VERSION=$(echo "$VERSION"| sed "s/^v//g" )
 
 # compose the target zip file name
 ZIP_FILE_NAME="$DEST_DIR/jcd-new_v$VERSION.zip"
