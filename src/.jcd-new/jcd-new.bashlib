@@ -174,7 +174,25 @@ warn_on_missing_variable() {
       if [[ "$MESSAGE" == "" ]]; then
         echo "WARNING: \$$VAR_NAME was not specified in the environment."
       elif [[ "${EMIT_PREFIX,,}" == true ]]; then
-        echo "WARNING: \$$VAR_NAME not specified in the environment. $MESSAGE"
+        echo "WARNING: \$$VAR_NAME was not specified in the environment. $MESSAGE"
+      else
+        echo "$MESSAGE"
+      fi
+  fi
+}
+
+warn_on_variable_set() {
+  VAR_NAME="$1"
+  MESSAGE="$2"
+  EMIT_PREFIX="$3"
+  # Perform parameter expansion to detect if the named parameter has been defined.
+  # https://www.gnu.org/software/bash/manual/bash.html#Shell-Parameter-Expansion
+  # shellcheck disable=SC2236
+  if [ ! -z ${!VAR_NAME+x} ]; then
+      if [[ "$MESSAGE" == "" ]]; then
+        echo "WARNING: \$$VAR_NAME was specified in the environment."
+      elif [[ "${EMIT_PREFIX,,}" == true ]]; then
+        echo "WARNING: \$$VAR_NAME was specified in the environment. $MESSAGE"
       else
         echo "$MESSAGE"
       fi
@@ -328,3 +346,4 @@ export -f set_netstandard_version_and_connect_project_README_and_LICENSE_files
 export -f perform_initial_commit_and_set_branch_name_to_main
 export -f abort_on_missing_or_empty_variable
 export -f create_github_repo_and_push
+export -f warn_on_variable_set

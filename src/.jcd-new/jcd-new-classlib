@@ -55,7 +55,7 @@ if [ ! -d "$github" ]; then
   exit 1;
 fi
 
-abort_on_missing_variable GITHUB_TOKEN
+warn_on_variable_set GITHUB_TOKEN "Using a token in your environment is a security risk. Please remove it, then login to gh-cli from the command line when prompted." true
 
 abort_on_missing_variable GITHUB_USER_NAME
 
