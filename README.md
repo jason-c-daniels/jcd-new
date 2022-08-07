@@ -21,7 +21,7 @@ jcd-new classlib -p=Jcd.Delete.Me5 -ngh
 jcd-new classlib -p=Jcd.Delete.Me6 --no-commit 
 jcd-new classlib -p=Jcd.Delete.Me7 -nc
 
-# Create a class library, with the BSD 1-Clause, license and push to GitHub 
+# Create a class library, with the BSD 1-Clause license, and push to GitHub 
 jcd-new classlib -p=Jcd.Delete.Me8 --license=BSD-1
 jcd-new classlib -p=Jcd.Delete.Me9 -lic=BSD-1
 
