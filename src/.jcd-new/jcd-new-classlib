@@ -1,6 +1,6 @@
 #!/bin/bash
-source "$JCD_NEW_LIBS/jcd-new.bashlib"
 set -e
+
 if [ $# -eq 0 ]; then
   echo "No arguments provided to jcd-new classlib. Displaying help."
   bash "$JCD_NEW_LIBS/jcd-new-help-classlib"
@@ -11,17 +11,17 @@ for i in $*; do
   case $i in
     -p=*|--project=*|--project-name=*)
       echo "found project name parameter"
-      PROJECT_NAME="${i#*=}"
+      export PROJECT_NAME="${i#*=}"
       shift # past argument=value
       ;;
     -ngh|--no-github)
       echo "found NO_GITHUB flag"
-      NO_GITHUB=1
+      export NO_GITHUB=1
       shift # past argument
       ;;
     -nsv=*|--netstandard-version=*)
       echo "found NETSTANDARD_VERSION parameter"
-      NETSTANDARD_VERSION="${i#*=}"
+      export NETSTANDARD_VERSION="${i#*=}"
       shift # past argument
       ;;
     --version)
@@ -36,137 +36,83 @@ for i in $*; do
   esac
 done
 
-if [ -z ${PROJECT_NAME+x} ]
-then
-    echo "No project name specified. Please use -p=, --project=, or --project-name= to specify the project name."
-    exit 1
-fi
+abort_on_missing_variable PROJECT_NAME "ABORTING: No project name specified. Please use -p=, --project=, or --project-name= to specify the project name."
 
-if [ -z ${NETSTANDARD_VERSION+x} ]
-then
-    echo ".NET Standard version not specified, defaulting to .NET Standard 2.1"
-    NETSTANDARD_VERSION=2.1
-fi
+validate_netstandard_version "$NETSTANDARD_VERSION"
 
-if [[ "$NETSTANDARD_VERSION" != @(1[.]0|1[.]1|1[.]2|1[.]3|1[.]4|1[.]5|1[.]6|2[.]0|2[.]1) ]]
-then
-  echo "$NETSTANDARD_VERSION is not a recognized/supported version of .NET Standard."
-  exit 1
-fi
+abort_on_missing_variable NETSTANDARD_VERSION
 
-if [ -z ${FULL_NAME+x} ]
-then
-    echo "\$FULL_NAME not specified in the environment. Cannot process $JCD_NEW_TEMPLATES/LICENSE.template without it. Aborting."
-    exit 1
-fi
+abort_on_missing_variable FULL_NAME "Cannot process $JCD_NEW_TEMPLATES/LICENSE.template without it." true
 
-if [ -z ${GITHUB_USER_NAME+x} ]
-then
-    echo "\$GITHUB_USER_NAME not specified in the environment. Cannot process $JCD_NEW_TEMPLATES/classlib/README.md.template without it. Aborting."
-    exit 1
-fi
+abort_on_missing_variable GITHUB_USER_NAME "Cannot process various GitHub integrations without it." true
 
 #validate that $github has been set and the directory exists
-if [ -z ${github+x} ]
-then
-  echo "\$github variable not set. Aborting."
+abort_on_missing_variable github
+if [ ! -d "$github" ]; then
+  echo "ABORTING: \$github defined, but the directory it points to doesn't exist: $github"
   exit 1;
 fi
 
-# validate that the GITHUB_TOKEN environment variable is set.
-if [ -z ${GITHUB_TOKEN+x} ]
-then
-  echo "\$GITHUB_TOKEN variable not set. Aborting."
-  exit 1
-fi
-# validate GITHUB_USER_NAME is set
-if [ -z ${GITHUB_USER_NAME+x} ]
-then
-  echo "\$GITHUB_USER_NAME variable not set."
-  exit 1
-fi
+abort_on_missing_variable GITHUB_TOKEN
 
-# validate that the gh tool is installed
-gh_ver=$(gh --version)
-echo "gh version $gh_ver detected."
+abort_on_missing_variable GITHUB_USER_NAME
 
-# validate that the dotnet command line is installed
-dotnet_ver=$(dotnet --version)
-echo "dotnet version $dotnet_ver detected."
+abort_on_missing_gh
+
+abort_on_missing_dotnet
 
 # capture some data
-YEAR=$(date +'%Y')
+export YEAR=$(date +'%Y')
 
 pushd "$github"
 
 #Verify the project doesn't already exist
 if [ -d "./$PROJECT_NAME" ]
-  then echo "Cannot create new project: folder already exists."
+  then echo "Cannot create new project: directory already exists."
   exit 1;
 fi
 
-echo Creating project "$PROJECT_NAME"
-dotnet new sln -o "$PROJECT_NAME"
-cd "./$PROJECT_NAME"
-echo "Initializing git repository"
-git init
+create_sln "$PROJECT_NAME"
+# now move into the newly created solution folder. This will be out repository root too.
+cd "./$PROJECT_NAME" #TODO: figure out why I didn't do a pushd/popd pair for this directory...
 
-echo "Adding empty .gitignore"
-touch .gitignore
+# initialize the git repository.
+init_git
 
-
-curl https://raw.githubusercontent.com/github/gitignore/master/Global/JetBrains.gitignore >> .gitignore
-curl https://raw.githubusercontent.com/github/gitignore/master/VisualStudio.gitignore >> .gitignore
-curl https://raw.githubusercontent.com/github/gitignore/master/Global/VisualStudioCode.gitignore >> .gitignore
+# append common git ignores to our default .gitignore
+echo "Building initial .gitignore"
+append_gitignore "Global/JetBrains.gitignore"
+append_gitignore "VisualStudio.gitignore"
+append_gitignore "Global/VisualStudioCode.gitignore"
 
 echo "Creating README.md"
+export NETSTANDARD_VERSION
 process_template "$JCD_NEW_TEMPLATES/classlib/README.md.template" "./README.md"
 
-echo "Creating PULL_REQUEST_TEMPLATE.md"
-process_template "$JCD_NEW_TEMPLATES/PULL_REQUEST_TEMPLATE.md.template" "./PULL_REQUEST_TEMPLATE.md"
-
-echo "Creating CONTRIBUTING.md"
-process_template "$JCD_NEW_TEMPLATES/CONTRIBUTING.md.template" "./CONTRIBUTING.md"
-
-echo "Creating CODE_OF_CONDUCT.md"
-process_template "$JCD_NEW_TEMPLATES/CODE_OF_CONDUCT.md.template" "./CODE_OF_CONDUCT.md"
-
-echo "Creating .github/FUNDING.yml"
-process_template "$JCD_NEW_TEMPLATES/.github/FUNDING.yml.template" ".github/FUNDING.yml"
-
-echo "Creating .github/ISSUE_TEMPLATE/feature_request.md"
-process_template "$JCD_NEW_TEMPLATES/.github/ISSUE_TEMPLATE/feature_request.md.template" ".github/ISSUE_TEMPLATE/feature_request.md"
-
-echo "Creating .github/ISSUE_TEMPLATE/bug_report.md"
-process_template "$JCD_NEW_TEMPLATES/.github/ISSUE_TEMPLATE/bug_report.md.template" ".github/ISSUE_TEMPLATE/bug_report.md"
-
-echo "Creating .github/ISSUE_TEMPLATE/technical_task.md"
-process_template "$JCD_NEW_TEMPLATES/.github/ISSUE_TEMPLATE/technical_task.md.template" ".github/ISSUE_TEMPLATE/technical_task.md"
-
-echo "Creating .github/ISSUE_TEMPLATE/user_story.md"
-process_template "$JCD_NEW_TEMPLATES/.github/ISSUE_TEMPLATE/user_story.md.template" ".github/ISSUE_TEMPLATE/user_story.md"
+process_dot_github_templates "$JCD_NEW_TEMPLATES"
 
 echo "Creating LICENSE"
 process_template "$JCD_NEW_TEMPLATES/LICENSE.template" "./LICENSE"
 
-#TODO: create a template nuget.config and use that instead.
 dotnet new nugetconfig
 
-dotnet new classlib -o "$PROJECT_NAME" -f netstandard2.1
-dotnet add "$PROJECT_NAME/$PROJECT_NAME.csproj" package Jcd.Validations
-dotnet add "$PROJECT_NAME/$PROJECT_NAME.csproj" package DefaultDocumentation
+create_netstandard21_classlib "$PROJECT_NAME"
 dotnet sln add "$PROJECT_NAME/$PROJECT_NAME.csproj"
 
-dotnet new xunit -o "$PROJECT_NAME.Tests"
-dotnet add "$PROJECT_NAME.Tests/$PROJECT_NAME.Tests.csproj" package Moq
-dotnet add "$PROJECT_NAME.Tests/$PROJECT_NAME.Tests.csproj" reference "$PROJECT_NAME/$PROJECT_NAME.csproj"
+create_xunit_tests "$PROJECT_NAME"
 dotnet sln add "$PROJECT_NAME.Tests/$PROJECT_NAME.Tests.csproj"
 
-dotnet new console -o "$PROJECT_NAME.Examples"
-dotnet add "$PROJECT_NAME.Examples/$PROJECT_NAME.Examples.csproj" reference "$PROJECT_NAME/$PROJECT_NAME.csproj"
+create_examples_project "$PROJECT_NAME"
 dotnet sln add "$PROJECT_NAME.Examples/$PROJECT_NAME.Examples.csproj"
 
-#Set netstandard version. Add README.md, nuget.config and LICENSE to library .csproj file
+# Set netstandard version. Add README.md, nuget.config and LICENSE to library .csproj file
+
+# Yes, this is currently an ugly hack. The command line tools don't allow for setting the netstandard version
+# and adding non-project folder non-compilable files wasn't as straight forward as the documentation seemed.
+# Since both required editing the project file I decided to do both at once with this simple
+# set of sed scripts. Yes. I'll need to eventually find a better way. Maybe I'll make a dotnet tool
+# that edits the project file in a simpler to use fashion and allows for changing the netstandard
+# down to 1.0.
 sed -i "s/<TargetFramework>netstandard2.1<\/TargetFramework>/<TargetFramework>netstandard$NETSTANDARD_VERSION<\/TargetFramework>\n    <LangVersion>8<\/LangVersion>/" "$PROJECT_NAME/$PROJECT_NAME.csproj"
 sed -i 's/<\/Project>//' "$PROJECT_NAME/$PROJECT_NAME.csproj"
 echo "
