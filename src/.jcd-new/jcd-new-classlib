@@ -15,8 +15,14 @@ for i in $*; do
       shift # past argument=value
       ;;
     -ngh|--no-github)
-      echo "found NO_GITHUB flag"
+      echo "found --no-github flag"
       export NO_GITHUB=1
+      shift # past argument
+      ;;
+    -nc|--no-commit)
+      echo "found --no-commit flag"
+      export NO_GITHUB=1
+      export NO_COMMIT=1
       shift # past argument
       ;;
     -nsv=*|--netstandard-version=*)
@@ -129,7 +135,12 @@ popd
 echo "Performing initial build of $PROJECT_NAME to generate documentation stubs."
 dotnet build
 
-perform_initial_commit_and_set_branch_name_to_main ".NET Standard $NETSTANDARD_VERSION project created with jcd-new classlib"
+if [ "$NO_COMMIT" == "1" ]
+then
+  echo "--no-commit specified. Skipping initial commit to Git repository."
+else
+  perform_initial_commit_and_set_branch_name_to_main ".NET Standard $NETSTANDARD_VERSION project created with jcd-new classlib"
+fi
 
 if [ "$NO_GITHUB" == "1" ]
 then

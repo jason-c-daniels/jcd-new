@@ -30,6 +30,11 @@ jcd-new classlib <options>
 
    -p=<project-name>                An alias for --project-name=
 
+   --no-commit                      OPTIONAL. If specified, skips the initial commit to the local Git repository.
+                                    Implies --no-github
+
+   -nc                              An alias for --no-commit
+
    --no-github                      OPTIONAL. If specified, skips the github integration steps.
 
    -ngh                             An alias for --no-github
