@@ -1,12 +1,39 @@
 #!/bin/bash
-cat << EOF
+cat << EOF | less
 usage:
 jcd-new classlib <options>
+   --license=<license>              OPTIONAL. Specify the an OSS license for the project. (MIT is the default if not specified.)
+                                    Supported licenses are as follows:
+                                      * 'Apache-2.0' for the Apache 2.0
+                                      * 'BSD-1' for the BSD 1-Clause License
+                                      * 'BSD-2' for the BSD 2-Clause License
+                                      * 'BSD-3' for the BSD 3-Clause License
+                                      * 'ISC' for the ISC License
+                                      * 'JAM' for the JAM License
+                                      * 'MIT' for the MIT License
+                                      * 'MIT-0' for the MIT No Attribution License
+                                      * 'UPL' for the The Universal Permissive License (UPL), Version 1.0
+
+                                    Example 1:
+                                    $ jcd-new classlib --license=Apache-2.0 -ngh -p=Some.Project
+                                    Will generate Some.Project with the Apache-2.0 license text in the LICENSE file.
+
+                                    Example 2:
+                                    $ jcd-new classlib -ngh -p=Some.Project
+                                    Will generate Some.Project with the MIT license text in the LICENSE file.
+
+   -lic=<license>                   An alias for --license=
+
    --project-name=<project-name>    REQUIRED. Specifies the name of the classlib you wish to create.
 
    --project=<project-name>         An alias for --project-name=
 
    -p=<project-name>                An alias for --project-name=
+
+   --no-commit                      OPTIONAL. If specified, skips the initial commit to the local Git repository.
+                                    Implies --no-github
+
+   -nc                              An alias for --no-commit
 
    --no-github                      OPTIONAL. If specified, skips the github integration steps.
 

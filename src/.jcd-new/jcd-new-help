@@ -2,20 +2,22 @@
 set -e
 
 if [[ "$1" == "" ]]; then
-cat << EOF
+cat << EOF | less
 usage: jcd-new [command] [command arguments]
 For more details on the individual commands type jcd-new help [command]
 
 List of commands:
-classlib   : creates a new .NET Standard class library.
+classlib             : Creates a new .NET Standard class library. See jcd-new help classlib for details.
 
-locations  : lists the directory locations jcd-new is currently using.
+locations            : Lists the directory locations jcd-new is currently using.
 
-version    : Display the version number.
+version              : Display the version number.
 
---version  : And alias for version.
+--version            : An alias for version.
 
-help       : Displays this help information.
+help                 : Displays this help information.
+
+help <command>       : Displays command specific help.
 
 EOF
 else

@@ -15,14 +15,23 @@ for i in $*; do
       shift # past argument=value
       ;;
     -ngh|--no-github)
-      echo "found NO_GITHUB flag"
+      echo "found --no-github flag"
       export NO_GITHUB=1
+      shift # past argument
+      ;;
+    -nc|--no-commit)
+      echo "found --no-commit flag"
+      export NO_GITHUB=1
+      export NO_COMMIT=1
       shift # past argument
       ;;
     -nsv=*|--netstandard-version=*)
       echo "found NETSTANDARD_VERSION parameter"
       export NETSTANDARD_VERSION="${i#*=}"
       shift # past argument
+      ;;
+    -lic=*|--license=*)
+      LICENSE="${i#*=}"
       ;;
     --version)
       exec "$JCD_NEW_LIBS/jcd-new-version"
@@ -35,6 +44,8 @@ for i in $*; do
       ;;
   esac
 done
+
+select_license_template "$LICENSE"
 
 abort_on_missing_variable PROJECT_NAME "ABORTING: No project name specified. Please use -p=, --project=, or --project-name= to specify the project name."
 
@@ -94,8 +105,8 @@ process_template "$JCD_NEW_TEMPLATES/classlib/README.md.template" "./README.md"
 
 process_dot_github_templates "$JCD_NEW_TEMPLATES"
 
-echo "Creating LICENSE"
-process_template "$JCD_NEW_TEMPLATES/LICENSE.template" "./LICENSE"
+echo "Creating LICENSE file"
+process_template "$LICENSE_TEMPLATE" "./LICENSE"
 
 dotnet new nugetconfig
 
@@ -124,7 +135,12 @@ popd
 echo "Performing initial build of $PROJECT_NAME to generate documentation stubs."
 dotnet build
 
-perform_initial_commit_and_set_branch_name_to_main ".NET Standard $NETSTANDARD_VERSION project created with jcd-new classlib"
+if [ "$NO_COMMIT" == "1" ]
+then
+  echo "--no-commit specified. Skipping initial commit to Git repository."
+else
+  perform_initial_commit_and_set_branch_name_to_main ".NET Standard $NETSTANDARD_VERSION project created with jcd-new classlib"
+fi
 
 if [ "$NO_GITHUB" == "1" ]
 then
