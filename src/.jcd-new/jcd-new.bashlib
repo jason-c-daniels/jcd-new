@@ -134,9 +134,9 @@ abort_on_missing_variable() {
   if [ -z ${!VAR_NAME+x} ]
   then
       if [[ "$MESSAGE" == "" ]]; then
-        echo "ABORTING: \\\$$VAR_NAME was not specified in the environment and is required."
+        echo "ABORTING: \$$VAR_NAME was not specified in the environment and is required."
       elif [[ "${EMIT_PREFIX,,}" == true ]]; then
-        echo "ABORTING: \\\$$VAR_NAME not specified in the environment. $MESSAGE"
+        echo "ABORTING: \$$VAR_NAME not specified in the environment. $MESSAGE"
       else
         echo "$MESSAGE"
       fi
@@ -171,9 +171,9 @@ warn_on_missing_variable() {
   if [ -z ${!VAR_NAME+x} ]
   then
       if [[ "$MESSAGE" == "" ]]; then
-        echo "WARNING: \\\$$VAR_NAME was not specified in the environment."
+        echo "WARNING: \$$VAR_NAME was not specified in the environment."
       elif [[ "${EMIT_PREFIX,,}" == true ]]; then
-        echo "WARNING: \\\$$VAR_NAME not specified in the environment. $MESSAGE"
+        echo "WARNING: \$$VAR_NAME not specified in the environment. $MESSAGE"
       else
         echo "$MESSAGE"
       fi

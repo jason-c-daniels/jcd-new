@@ -48,7 +48,7 @@ abort_on_missing_variable GITHUB_USER_NAME "Cannot process various GitHub integr
 
 #validate that $github has been set and the directory exists
 abort_on_missing_variable github
-if [ ! -d "$github" ]; then
+if [ ! -d "$(realpath -qm "$github")" ]; then
   echo "ABORTING: \$github defined, but the directory it points to doesn't exist: $github"
   exit 1;
 fi
