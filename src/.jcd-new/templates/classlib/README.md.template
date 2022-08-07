@@ -24,17 +24,17 @@ A *.NET Standard {NETSTANDARD_VERSION}* library that provides **a description of
   * Select {PROJECT_NAME} from the list.
   * Click "Import" at the bottom of the screen.
 4. Review various generated non-code files to ensure you have customized the content to this project's
-   needs. *The list is relative to the project root directory.*
-  * ./github/ISSUE_TEMPLATE/bug_report.md
-  * ./github/ISSUE_TEMPLATE/feature_request.md
-  * ./github/ISSUE_TEMPLATE/technical_task.md
-  * ./github/ISSUE_TEMPLATE/user_story.md
-  * ./github/FUNDING.yml - Remove this if you don't want to solicit funding for your works. (Currently only has Patreon and Ko-Fi entries)
-  * ./LICENSE
-  * ./CODE_OF_CONDUCT.md
-  * ./CONTRIBUTING.md
-  * ./PULL_REQUEST.md
-5. Delete this section of the this file and replace it with something meaningful.
+   needs. *The list is relative to the repository root directory.*
+  * [.github/ISSUE_TEMPLATE/bug_report.md](.github/ISSUE_TEMPLATE/bug_report.md)
+  * [.github/ISSUE_TEMPLATE/feature_request.md](.github/ISSUE_TEMPLATE/feature_request.md)
+  * [.github/ISSUE_TEMPLATE/technical_task.md](.github/ISSUE_TEMPLATE/technical_task.md)
+  * [.github/ISSUE_TEMPLATE/user_story.md](.github/ISSUE_TEMPLATE/user_story.md)
+  * [.github/FUNDING.yml](.github/FUNDING.yml) - Remove this if you don't want to solicit funding for your works. (Currently only has Patreon and Ko-Fi entries)
+  * [LICENSE](LICENSE)
+  * [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+  * [CONTRIBUTING.md](CONTRIBUTING.md)
+  * [PULL_REQUEST_TEMPLATE.md](PULL_REQUEST_TEMPLATE.md)
+5. Delete this section of this file and replace it with something meaningful.
 
 ## Examples
 

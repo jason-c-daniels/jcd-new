@@ -1,9 +1,10 @@
 #!/bin/bash
-# TODO: put reusable functions here and export them
+
 process_template() {
   local template_file="$1"
   local output_file="$2"
-  local out_dir=$(dirname "$output_file")
+  local out_dir
+  out_dir="$(dirname "$output_file")"
 
   # check if we need to put defaults in for any of the params.
   if [ -z ${PROJECT_NAME+x} ]
@@ -50,8 +51,280 @@ process_template() {
     sed "s/{PATREON_ID}/$PATREON_ID/g" | \
     sed "s/{KOFI_ID}/$KOFI_ID/g" | \
     sed "s/{YEAR}/$YEAR/g" | \
-    sed "s/{FULL_NAME}/$FULL_NAME/g" \
+    sed "s/{FULL_NAME}/$FULL_NAME/g" | \
+    sed "s/[.]template//g" \
     > "$output_file"
 }
 
-export process_template
+process_dot_github_templates() {
+  local JCD_NEW_TEMPLATES="$1"
+  echo "Creating PULL_REQUEST_TEMPLATE.md"
+  process_template "$JCD_NEW_TEMPLATES/PULL_REQUEST_TEMPLATE.md.template" "./PULL_REQUEST_TEMPLATE.md"
+
+  echo "Creating CONTRIBUTING.md"
+  process_template "$JCD_NEW_TEMPLATES/CONTRIBUTING.md.template" "./CONTRIBUTING.md"
+
+  echo "Creating CODE_OF_CONDUCT.md"
+  process_template "$JCD_NEW_TEMPLATES/CODE_OF_CONDUCT.md.template" "./CODE_OF_CONDUCT.md"
+
+  echo "Creating .github/FUNDING.yml"
+  process_template "$JCD_NEW_TEMPLATES/.github/FUNDING.yml.template" ".github/FUNDING.yml"
+
+  echo "Creating .github/ISSUE_TEMPLATE/feature_request.md"
+  process_template "$JCD_NEW_TEMPLATES/.github/ISSUE_TEMPLATE/feature_request.md.template" ".github/ISSUE_TEMPLATE/feature_request.md"
+
+  echo "Creating .github/ISSUE_TEMPLATE/bug_report.md"
+  process_template "$JCD_NEW_TEMPLATES/.github/ISSUE_TEMPLATE/bug_report.md.template" ".github/ISSUE_TEMPLATE/bug_report.md"
+
+  echo "Creating .github/ISSUE_TEMPLATE/technical_task.md"
+  process_template "$JCD_NEW_TEMPLATES/.github/ISSUE_TEMPLATE/technical_task.md.template" ".github/ISSUE_TEMPLATE/technical_task.md"
+
+  echo "Creating .github/ISSUE_TEMPLATE/user_story.md"
+  process_template "$JCD_NEW_TEMPLATES/.github/ISSUE_TEMPLATE/user_story.md.template" ".github/ISSUE_TEMPLATE/user_story.md"
+}
+
+init_git() {
+  echo "Initializing git repository"
+  git init
+
+  echo "Adding empty .gitignore"
+  touch .gitignore
+}
+
+append_gitignore(){
+  local GI_ROOT="https://raw.githubusercontent.com/github/gitignore/master"
+  echo "appending $1 to .gitignore from $GI_ROOT"
+  curl "$GI_ROOT/$1" >> .gitignore
+}
+
+# create an empty solution file
+create_sln(){
+  local SLN_NAME="$1"
+  echo Creating solution "$SLN_NAME"
+  dotnet new sln -o "$SLN_NAME"
+}
+
+# create a netstandard2.1 classlib, with no fix-ups in the csproj file.
+create_netstandard21_classlib() {
+  local PROJECT_NAME="$1"
+  dotnet new classlib -o "$PROJECT_NAME" -f netstandard2.1
+  dotnet add "$PROJECT_NAME/$PROJECT_NAME.csproj" package Jcd.Validations
+  dotnet add "$PROJECT_NAME/$PROJECT_NAME.csproj" package DefaultDocumentation
+}
+
+#create the xunit test project and have it reference the classlib
+create_xunit_tests() {
+  local PROJECT_NAME="$1"
+  dotnet new xunit -o "$PROJECT_NAME.Tests"
+  dotnet add "$PROJECT_NAME.Tests/$PROJECT_NAME.Tests.csproj" package Moq
+  dotnet add "$PROJECT_NAME.Tests/$PROJECT_NAME.Tests.csproj" reference "$PROJECT_NAME/$PROJECT_NAME.csproj"
+}
+
+create_examples_project() {
+  local PROJECT_NAME="$1"
+  dotnet new console -o "$PROJECT_NAME.Examples"
+  dotnet add "$PROJECT_NAME.Examples/$PROJECT_NAME.Examples.csproj" reference "$PROJECT_NAME/$PROJECT_NAME.csproj"
+}
+
+abort_on_missing_variable() {
+  VAR_NAME="$1"
+  MESSAGE="$2"
+  EMIT_PREFIX="$3"
+  # Perform parameter expansion to detect if the named parameter has been defined.
+  # https://www.gnu.org/software/bash/manual/bash.html#Shell-Parameter-Expansion
+  if [ -z ${!VAR_NAME+x} ]
+  then
+      if [[ "$MESSAGE" == "" ]]; then
+        echo "ABORTING: \$$VAR_NAME was not specified in the environment and is required."
+      elif [[ "${EMIT_PREFIX,,}" == true ]]; then
+        echo "ABORTING: \$$VAR_NAME not specified in the environment. $MESSAGE"
+      else
+        echo "$MESSAGE"
+      fi
+      exit 1
+  fi
+}
+
+abort_on_missing_or_empty_variable() {
+  VAR_NAME="$1"
+  MESSAGE="$2"
+  EMIT_PREFIX="$3"
+  abort_on_missing_variable "$VAR_NAME" "$MESSAGE" "$EMIT_PREFIX"
+  # Perform parameter expansion to detect if the named parameter has been defined.
+  # https://www.gnu.org/software/bash/manual/bash.html#Shell-Parameter-Expansion
+  if [[ "${!VAR_NAME+x}" == "" ]]
+  then
+      if [[ "$MESSAGE" == "" ]]; then
+        echo "ABORTING: \\\$$VAR_NAME is empty but is required to contain data."
+      else
+        echo "$MESSAGE"
+      fi
+      exit 1
+  fi
+}
+
+warn_on_missing_variable() {
+  VAR_NAME="$1"
+  MESSAGE="$2"
+  EMIT_PREFIX="$3"
+  # Perform parameter expansion to detect if the named parameter has been defined.
+  # https://www.gnu.org/software/bash/manual/bash.html#Shell-Parameter-Expansion
+  if [ -z ${!VAR_NAME+x} ]
+  then
+      if [[ "$MESSAGE" == "" ]]; then
+        echo "WARNING: \$$VAR_NAME was not specified in the environment."
+      elif [[ "${EMIT_PREFIX,,}" == true ]]; then
+        echo "WARNING: \$$VAR_NAME not specified in the environment. $MESSAGE"
+      else
+        echo "$MESSAGE"
+      fi
+  fi
+}
+
+validate_netstandard_version() {
+  NETSTANDARD_VERSION="$1"
+  if [[ "$NETSTANDARD_VERSION" == "" ]]
+  then
+      echo ".NET Standard version not specified."
+      NETSTANDARD_VERSION=2.1
+  fi
+
+  if [[ "$NETSTANDARD_VERSION" != @(1[.]0|1[.]1|1[.]2|1[.]3|1[.]4|1[.]5|1[.]6|2[.]0|2[.]1) ]]
+  then
+    echo "$NETSTANDARD_VERSION is not a recognized/supported version of .NET Standard."
+    exit 1
+  else
+    echo "Using .NET Standard $NETSTANDARD_VERSION"
+  fi
+  export NETSTANDARD_VERSION
+}
+
+abort_on_missing_dotnet(){
+  # validate that the dotnet command line is installed
+  dotnet_ver=$(dotnet --version)
+  echo "dotnet version $dotnet_ver detected."
+}
+
+abort_on_missing_gh() {
+  # validate that the gh tool is installed
+  gh_ver=$(gh --version)
+  echo "gh version $gh_ver detected."
+}
+
+set_netstandard_version_and_connect_project_README_and_LICENSE_files() {
+  # Yes, this is currently an ugly hack. The dotnet command line tools don't allow for setting the netstandard version
+  # and adding non-project folder non-compilable files wasn't as straight forward as the documentation seemed.
+  # Since both required editing the project file I decided to do both at once with this simple
+  # set of sed scripts. Yes. I'll need to eventually find a better way. Maybe I'll make a dotnet tool
+  # that edits the project file in a simpler to use fashion and allows for changing the netstandard
+  # down to 1.0.
+  local ABORT_PREFIX="FROM set_netstandard_version_and_connect_project_README_and_LICENSE_files --"
+
+  abort_on_missing_variable PROJECT_NAME "$ABORT_PREFIX Cannot edit project when none is specified." true
+  abort_on_missing_variable NETSTANDARD_VERSION "$ABORT_PREFIX Cannot edit project when missing NETSTANDARD_VERSION." true
+  abort_on_missing_variable GITHUB_USER_NAME "$ABORT_PREFIX Cannot edit project when missing GITHUB_USER_NAME." true
+  abort_on_missing_variable NETSTANDARD_VERSION "$ABORT_PREFIX Cannot edit project when missing NETSTANDARD_VERSION." true
+  warn_on_missing_variable NUGET_PACKAGE_ICON_URL "No package icon will be used." true
+
+  echo "Setting netstandard to version $NETSTANDARD_VERSION and C# language version to 8"
+  sed -i "s/<TargetFramework>netstandard2.1<\/TargetFramework>/<TargetFramework>netstandard$NETSTANDARD_VERSION<\/TargetFramework>\n    <LangVersion>8<\/LangVersion>/" "$PROJECT_NAME/$PROJECT_NAME.csproj"
+
+  echo "Editing $PROJECT_NAME/$PROJECT_NAME.csproj to:"
+  echo "  * Contain nuget package build information.
+  * Turn on nuget package creation on build
+  * Link, README.md, LICENSE, and nuget.config
+  * Use README.md as the nuget PackageReadmeFile
+  "
+  sed -i 's/<\/Project>//' "$PROJECT_NAME/$PROJECT_NAME.csproj"
+  echo "
+      <PropertyGroup>
+          <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+          <Title>$PROJECT_NAME</Title>
+          <Authors>$FULL_NAME</Authors>
+          <Description>A short description goes here.</Description>
+          <Copyright>$YEAR</Copyright>
+          <PackageProjectUrl>https://github.com/$GITHUB_USER_NAME/$PROJECT_NAME</PackageProjectUrl>
+          <PackageLicenseUrl>https://github.com/$GITHUB_USER_NAME/$PROJECT_NAME/blob/main/LICENSE</PackageLicenseUrl>
+          <RepositoryUrl>https://github.com/$GITHUB_USER_NAME/$PROJECT_NAME</RepositoryUrl>
+          <RepositoryType>GitHub</RepositoryType>
+          <PackageVersion>0.0.1</PackageVersion>
+          <AssemblyVersion>0.0.1</AssemblyVersion>
+          <FileVersion>0.0.1</FileVersion>
+          <TargetFramework>netstandard$NETSTANDARD_VERSION</TargetFramework>
+          <PackageIconUrl>$NUGET_PACKAGE_ICON_URL</PackageIconUrl>
+          <PackageReleaseNotes></PackageReleaseNotes>
+      </PropertyGroup>
+
+      <PropertyGroup>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+      </PropertyGroup>
+
+      <ItemGroup>
+        <None Include=\"..\\README.md\" Pack=\"true\" PackagePath=\"\\\" />
+        <None Include=\"..\\LICENSE\" Pack=\"false\" PackagePath=\"\\\" />
+        <None Include=\"..\\nuget.config\" Pack=\"false\" PackagePath=\"\\\" />
+      </ItemGroup>
+
+      <PropertyGroup Condition=\" '\$(Configuration)' == 'Debug' \">
+        <DocumentationFile>..\\docs\\$PROJECT_NAME.xml</DocumentationFile>
+      </PropertyGroup>
+
+      <PropertyGroup Condition=\" '\$(Configuration)' == 'Release' \">
+        <DocumentationFile>..\\docs\\$PROJECT_NAME.xml</DocumentationFile>
+      </PropertyGroup>
+
+  </Project>
+  " >> "$PROJECT_NAME/$PROJECT_NAME.csproj"
+
+}
+
+perform_initial_commit_and_set_branch_name_to_main() {
+  COMMIT_MESSAGE="$1"
+  abort_on_missing_or_empty_variable COMMIT_MESSAGE "ABORTING: Unable to perform initial commit. Missing a commit message when calling 'perform_initial_commit_and_set_branch_name_to_main'. The calling script is broken."
+  echo "
+Adding files to git"
+  git add .
+
+  echo "
+Normalizing line endings."
+  git add --renormalize .
+
+  echo "
+Performing initial commit."
+  git commit -m "$COMMIT_MESSAGE"
+
+  echo "
+Setting main branch name to 'main'"
+  git branch -M main
+
+}
+
+create_github_repo_and_push(){
+  echo "Creating the github repository and pushing."
+  abort_on_missing_variable GITHUB_USER_NAME
+  abort_on_missing_variable PROJECT_NAME
+
+  # Create the github repo and do the initial push
+  gh auth login --hostname github.com || true
+  gh repo create "$GITHUB_USER_NAME/$PROJECT_NAME" --public --gitignore= --license= -y || true
+  git remote add origin "https://github.com/$GITHUB_USER_NAME/$PROJECT_NAME.git"
+  git push -u origin main || true
+}
+
+export -f process_template
+export -f process_dot_github_templates
+export -f init_git
+export -f append_gitignore
+export -f create_sln
+export -f create_netstandard21_classlib
+export -f create_xunit_tests
+export -f create_examples_project
+export -f abort_on_missing_variable
+export -f warn_on_missing_variable
+export -f validate_netstandard_version
+export -f abort_on_missing_dotnet
+export -f abort_on_missing_gh
+export -f set_netstandard_version_and_connect_project_README_and_LICENSE_files
+export -f perform_initial_commit_and_set_branch_name_to_main
+export -f abort_on_missing_or_empty_variable
+export -f create_github_repo_and_push
