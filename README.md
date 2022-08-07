@@ -9,13 +9,21 @@ jcd-new classlib --project-name=Jcd.Delete.Me1
 jcd-new classlib --project=Jcd.Delete.Me2
 jcd-new classlib -p=Jcd.Delete.Me3
 
-# Create a .NET Standard 1.0 class library and push it to github 
+# Create a .NET Standard 1.0 class library and push it to GitHub 
 jcd-new classlib -p=Jcd.Delete.Me1 --netstandard-version=1.0
 jcd-new classlib -p=Jcd.Delete.Me1 -nsv=1.0
 
-# Create a class library and DO NOT push it to github 
+# Create a class library, perform the initial local commit, but DO NOT push it to GitHub 
 jcd-new classlib -p=Jcd.Delete.Me4 --no-github 
 jcd-new classlib -p=Jcd.Delete.Me5 -ngh
+
+# Create a class library, DO NOT perform the initial local commit nor push it to GitHub 
+jcd-new classlib -p=Jcd.Delete.Me6 --no-commit 
+jcd-new classlib -p=Jcd.Delete.Me7 -nc
+
+# Create a class library, with the BSD 1-Clause, license and push to GitHub 
+jcd-new classlib -p=Jcd.Delete.Me8 --license=BSD-1
+jcd-new classlib -p=Jcd.Delete.Me9 -lic=BSD-1
 
 # Display the version number for jcd-new
 jcd-new version
