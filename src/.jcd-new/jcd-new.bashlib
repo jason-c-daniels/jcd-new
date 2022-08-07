@@ -341,7 +341,7 @@ select_license_template(){
   else
     echo "License: '$LICENSE' not recognized/supported."
     cat << EOF
-Please specify use of the following (case sensitive):
+Please use of the following (case sensitive):
   --license=Apache-2.0 for the Apache 2.0
   --license=BSD-1 for the BSD 1-Clause License
   --license=BSD-2 for the BSD 2-Clause License
