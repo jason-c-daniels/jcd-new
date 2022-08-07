@@ -120,23 +120,17 @@ process_template "$JCD_NEW_TEMPLATES/classlib/Class1.cs.template" "Class1.cs"
 
 popd
 
-echo "Performing initial build of $PROJECT_NAME to generate documentation stub."
+echo "Performing initial build of $PROJECT_NAME to generate documentation stubs."
 dotnet build
 
 perform_initial_commit_and_set_branch_name_to_main ".NET Standard $NETSTANDARD_VERSION project created with jcd-new classlib"
+
 if [ "$NO_GITHUB" == "1" ]
 then
-  echo "--no-github specified. Skipping push to github."
-  popd
-  exit 0
+  echo "--no-github specified. Skipping GitHub repository creation and initial push."
+else
+  create_github_repo_and_push
 fi
-
-echo "Creating the github repository and pushing."
-# Create the github repo and do the initial push
-gh auth login --hostname github.com || true
-gh repo create "$GITHUB_USER_NAME/$PROJECT_NAME" --public --gitignore= --license= -y || true
-git remote add origin "https://github.com/$GITHUB_USER_NAME/$PROJECT_NAME.git"
-git push -u origin main || true
 
 # always pop the directory as a final step before exiting.
 popd

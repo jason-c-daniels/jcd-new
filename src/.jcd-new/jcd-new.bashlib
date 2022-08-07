@@ -297,6 +297,18 @@ Setting main branch name to 'main'"
 
 }
 
+create_github_repo_and_push(){
+  echo "Creating the github repository and pushing."
+  abort_on_missing_variable GITHUB_USER_NAME
+  abort_on_missing_variable PROJECT_NAME
+
+  # Create the github repo and do the initial push
+  gh auth login --hostname github.com || true
+  gh repo create "$GITHUB_USER_NAME/$PROJECT_NAME" --public --gitignore= --license= -y || true
+  git remote add origin "https://github.com/$GITHUB_USER_NAME/$PROJECT_NAME.git"
+  git push -u origin main || true
+}
+
 export -f process_template
 export -f process_dot_github_templates
 export -f init_git
@@ -313,3 +325,4 @@ export -f abort_on_missing_gh
 export -f set_netstandard_version_and_connect_project_README_and_LICENSE_files
 export -f perform_initial_commit_and_set_branch_name_to_main
 export -f abort_on_missing_or_empty_variable
+export -f create_github_repo_and_push
