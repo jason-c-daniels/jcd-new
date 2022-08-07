@@ -85,8 +85,8 @@ append_gitignore "Global/JetBrains.gitignore"
 append_gitignore "VisualStudio.gitignore"
 append_gitignore "Global/VisualStudioCode.gitignore"
 
-echo "Creating README.md"
 export NETSTANDARD_VERSION
+echo "Creating README.md"
 process_template "$JCD_NEW_TEMPLATES/classlib/README.md.template" "./README.md"
 
 process_dot_github_templates "$JCD_NEW_TEMPLATES"
@@ -106,54 +106,7 @@ create_examples_project "$PROJECT_NAME"
 dotnet sln add "$PROJECT_NAME.Examples/$PROJECT_NAME.Examples.csproj"
 
 # Set netstandard version. Add README.md, nuget.config and LICENSE to library .csproj file
-
-# Yes, this is currently an ugly hack. The command line tools don't allow for setting the netstandard version
-# and adding non-project folder non-compilable files wasn't as straight forward as the documentation seemed.
-# Since both required editing the project file I decided to do both at once with this simple
-# set of sed scripts. Yes. I'll need to eventually find a better way. Maybe I'll make a dotnet tool
-# that edits the project file in a simpler to use fashion and allows for changing the netstandard
-# down to 1.0.
-sed -i "s/<TargetFramework>netstandard2.1<\/TargetFramework>/<TargetFramework>netstandard$NETSTANDARD_VERSION<\/TargetFramework>\n    <LangVersion>8<\/LangVersion>/" "$PROJECT_NAME/$PROJECT_NAME.csproj"
-sed -i 's/<\/Project>//' "$PROJECT_NAME/$PROJECT_NAME.csproj"
-echo "
-    <PropertyGroup>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Title>$PROJECT_NAME</Title>
-        <Authors>$FULL_NAME</Authors>
-        <Description>A short description goes here.</Description>
-        <Copyright>$YEAR</Copyright>
-        <PackageProjectUrl>https://github.com/$GITHUB_USER_NAME/$PROJECT_NAME</PackageProjectUrl>
-        <PackageLicenseUrl>https://github.com/$GITHUB_USER_NAME/$PROJECT_NAME/blob/main/LICENSE</PackageLicenseUrl>
-        <RepositoryUrl>https://github.com/$GITHUB_USER_NAME/$PROJECT_NAME</RepositoryUrl>
-        <RepositoryType>GitHub</RepositoryType>
-        <PackageVersion>0.0.1</PackageVersion>
-        <AssemblyVersion>0.0.1</AssemblyVersion>
-        <FileVersion>0.0.1</FileVersion>
-        <TargetFramework>netstandard$NETSTANDARD_VERSION</TargetFramework>
-        <PackageIconUrl>https://s.gravatar.com/avatar/c7e8df18f543ea857ac93660a190df98?s=320</PackageIconUrl>
-        <PackageReleaseNotes></PackageReleaseNotes>
-    </PropertyGroup>
-
-    <PropertyGroup>
-      <PackageReadmeFile>README.md</PackageReadmeFile>
-    </PropertyGroup>
-
-    <ItemGroup>
-      <None Include=\"..\\README.md\" Pack=\"true\" PackagePath=\"\\\" />
-      <None Include=\"..\\LICENSE\" Pack=\"false\" PackagePath=\"\\\" />
-      <None Include=\"..\\nuget.config\" Pack=\"false\" PackagePath=\"\\\" />
-    </ItemGroup>
-
-    <PropertyGroup Condition=\" '\$(Configuration)' == 'Debug' \">
-      <DocumentationFile>..\\docs\\$PROJECT_NAME.xml</DocumentationFile>
-    </PropertyGroup>
-
-    <PropertyGroup Condition=\" '\$(Configuration)' == 'Release' \">
-      <DocumentationFile>..\\docs\\$PROJECT_NAME.xml</DocumentationFile>
-    </PropertyGroup>
-
-</Project>
-" >> "$PROJECT_NAME/$PROJECT_NAME.csproj"
+set_netstandard_version_and_connect_project_README_and_LICENSE_files
 
 pushd "$PROJECT_NAME"
 
@@ -169,6 +122,7 @@ echo "Performing initial build of $PROJECT_NAME to generate documentation stub."
 dotnet build
 
 git add .
+git add --renormalize .
 git commit -m ".NET Standard $NETSTANDARD_VERSION project created with jcd-new classlib"
 
 echo "Setting main branch name"

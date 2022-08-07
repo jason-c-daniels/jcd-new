@@ -190,6 +190,74 @@ abort_on_missing_gh() {
   gh_ver=$(gh --version)
   echo "gh version $gh_ver detected."
 }
+
+set_netstandard_version_and_connect_project_README_and_LICENSE_files() {
+  # Yes, this is currently an ugly hack. The dotnet command line tools don't allow for setting the netstandard version
+  # and adding non-project folder non-compilable files wasn't as straight forward as the documentation seemed.
+  # Since both required editing the project file I decided to do both at once with this simple
+  # set of sed scripts. Yes. I'll need to eventually find a better way. Maybe I'll make a dotnet tool
+  # that edits the project file in a simpler to use fashion and allows for changing the netstandard
+  # down to 1.0.
+  local ABORT_PREFIX="FROM set_netstandard_version_and_connect_project_README_and_LICENSE_files --"
+
+  abort_on_missing_variable PROJECT_NAME "$ABORT_PREFIX Cannot edit project when none is specified." true
+  abort_on_missing_variable NETSTANDARD_VERSION "$ABORT_PREFIX Cannot edit project when missing NETSTANDARD_VERSION." true
+  abort_on_missing_variable GITHUB_USER_NAME "$ABORT_PREFIX Cannot edit project when missing GITHUB_USER_NAME." true
+  abort_on_missing_variable NETSTANDARD_VERSION "$ABORT_PREFIX Cannot edit project when missing NETSTANDARD_VERSION." true
+  warn_on_missing_variable NUGET_PACKAGE_ICON_URL "No package icon will be used." true
+
+  echo "Setting netstandard to version $NETSTANDARD_VERSION and C# language version to 8"
+  sed -i "s/<TargetFramework>netstandard2.1<\/TargetFramework>/<TargetFramework>netstandard$NETSTANDARD_VERSION<\/TargetFramework>\n    <LangVersion>8<\/LangVersion>/" "$PROJECT_NAME/$PROJECT_NAME.csproj"
+
+  echo "Editing $PROJECT_NAME/$PROJECT_NAME.csproj to:"
+  echo "  * Contain nuget package build information.
+  * Turn on nuget package creation on build
+  * Link, README.md, LICENSE, and nuget.config
+  * Use README.md as the nuget PackageReadmeFile
+  "
+  sed -i 's/<\/Project>//' "$PROJECT_NAME/$PROJECT_NAME.csproj"
+  echo "
+      <PropertyGroup>
+          <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+          <Title>$PROJECT_NAME</Title>
+          <Authors>$FULL_NAME</Authors>
+          <Description>A short description goes here.</Description>
+          <Copyright>$YEAR</Copyright>
+          <PackageProjectUrl>https://github.com/$GITHUB_USER_NAME/$PROJECT_NAME</PackageProjectUrl>
+          <PackageLicenseUrl>https://github.com/$GITHUB_USER_NAME/$PROJECT_NAME/blob/main/LICENSE</PackageLicenseUrl>
+          <RepositoryUrl>https://github.com/$GITHUB_USER_NAME/$PROJECT_NAME</RepositoryUrl>
+          <RepositoryType>GitHub</RepositoryType>
+          <PackageVersion>0.0.1</PackageVersion>
+          <AssemblyVersion>0.0.1</AssemblyVersion>
+          <FileVersion>0.0.1</FileVersion>
+          <TargetFramework>netstandard$NETSTANDARD_VERSION</TargetFramework>
+          <PackageIconUrl>$NUGET_PACKAGE_ICON_URL</PackageIconUrl>
+          <PackageReleaseNotes></PackageReleaseNotes>
+      </PropertyGroup>
+
+      <PropertyGroup>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+      </PropertyGroup>
+
+      <ItemGroup>
+        <None Include=\"..\\README.md\" Pack=\"true\" PackagePath=\"\\\" />
+        <None Include=\"..\\LICENSE\" Pack=\"false\" PackagePath=\"\\\" />
+        <None Include=\"..\\nuget.config\" Pack=\"false\" PackagePath=\"\\\" />
+      </ItemGroup>
+
+      <PropertyGroup Condition=\" '\$(Configuration)' == 'Debug' \">
+        <DocumentationFile>..\\docs\\$PROJECT_NAME.xml</DocumentationFile>
+      </PropertyGroup>
+
+      <PropertyGroup Condition=\" '\$(Configuration)' == 'Release' \">
+        <DocumentationFile>..\\docs\\$PROJECT_NAME.xml</DocumentationFile>
+      </PropertyGroup>
+
+  </Project>
+  " >> "$PROJECT_NAME/$PROJECT_NAME.csproj"
+
+}
+
 export -f process_template
 export -f process_dot_github_templates
 export -f init_git
@@ -203,3 +271,4 @@ export -f warn_on_missing_variable
 export -f validate_netstandard_version
 export -f abort_on_missing_dotnet
 export -f abort_on_missing_gh
+export -f set_netstandard_version_and_connect_project_README_and_LICENSE_files
