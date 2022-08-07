@@ -121,13 +121,7 @@ popd
 echo "Performing initial build of $PROJECT_NAME to generate documentation stub."
 dotnet build
 
-git add .
-git add --renormalize .
-git commit -m ".NET Standard $NETSTANDARD_VERSION project created with jcd-new classlib"
-
-echo "Setting main branch name"
-git branch -M main
-
+perform_initial_commit_and_set_branch_name_to_main ".NET Standard $NETSTANDARD_VERSION project created with jcd-new classlib"
 if [ "$NO_GITHUB" == "1" ]
 then
   echo "--no-github specified. Skipping push to github."

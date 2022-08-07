@@ -144,6 +144,24 @@ abort_on_missing_variable() {
   fi
 }
 
+abort_on_missing_or_empty_variable() {
+  VAR_NAME="$1"
+  MESSAGE="$2"
+  EMIT_PREFIX="$3"
+  abort_on_missing_variable "$VAR_NAME" "$MESSAGE" "$EMIT_PREFIX"
+  # Perform parameter expansion to detect if the named parameter has been defined.
+  # https://www.gnu.org/software/bash/manual/bash.html#Shell-Parameter-Expansion
+  if [[ "${!VAR_NAME+x}" == "" ]]
+  then
+      if [[ "$MESSAGE" == "" ]]; then
+        echo "ABORTING: \\\$$VAR_NAME is empty but is required to contain data."
+      else
+        echo "$MESSAGE"
+      fi
+      exit 1
+  fi
+}
+
 warn_on_missing_variable() {
   VAR_NAME="$1"
   MESSAGE="$2"
@@ -258,6 +276,27 @@ set_netstandard_version_and_connect_project_README_and_LICENSE_files() {
 
 }
 
+perform_initial_commit_and_set_branch_name_to_main() {
+  COMMIT_MESSAGE="$1"
+  abort_on_missing_or_empty_variable COMMIT_MESSAGE "ABORTING: Unable to perform initial commit. Missing a commit message when calling 'perform_initial_commit_and_set_branch_name_to_main'. The calling script is broken."
+  echo "
+Adding files to git"
+  git add .
+
+  echo "
+Normalizing line endings."
+  git add --renormalize .
+
+  echo "
+Performing initial commit."
+  git commit -m "$COMMIT_MESSAGE"
+
+  echo "
+Setting main branch name to 'main'"
+  git branch -M main
+
+}
+
 export -f process_template
 export -f process_dot_github_templates
 export -f init_git
@@ -272,3 +311,5 @@ export -f validate_netstandard_version
 export -f abort_on_missing_dotnet
 export -f abort_on_missing_gh
 export -f set_netstandard_version_and_connect_project_README_and_LICENSE_files
+export -f perform_initial_commit_and_set_branch_name_to_main
+export -f abort_on_missing_or_empty_variable
