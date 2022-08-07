@@ -329,6 +329,35 @@ create_github_repo_and_push(){
   git push -u origin main || true
 }
 
+select_license_template(){
+  local LICENSE="$1"
+  if [[ "$LICENSE" == "" ]]; then
+    LICENSE="MIT"
+  fi
+
+  LICENSE_TEMPLATE="$JCD_NEW_TEMPLATES/LICENSE/LICENSE.$LICENSE.template"
+  if [ -f "$LICENSE_TEMPLATE" ]; then
+    echo "License: '$LICENSE' was recognized."
+  else
+    echo "License: '$LICENSE' not recognized/supported."
+    cat << EOF
+Please specify use of the following (case sensitive):
+  --license=Apache-2.0 for the Apache 2.0
+  --license=BSD-1 for the BSD 1-Clause License
+  --license=BSD-2 for the BSD 2-Clause License
+  --license=BSD-3 for the BSD 3-Clause License
+  --license=ISC for the ISC License
+  --license=JAM for the JAM License
+  --license=MIT for the MIT License
+  --license=MIT-0 for the MIT No Attribution License
+  --license=UPL for the The Universal Permissive License (UPL), Version 1.0
+EOF
+    exit 1;
+  fi
+
+  export LICENSE_TEMPLATE
+}
+
 export -f process_template
 export -f process_dot_github_templates
 export -f init_git
@@ -347,3 +376,4 @@ export -f perform_initial_commit_and_set_branch_name_to_main
 export -f abort_on_missing_or_empty_variable
 export -f create_github_repo_and_push
 export -f warn_on_variable_set
+export -f select_license_template

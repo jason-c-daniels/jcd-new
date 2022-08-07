@@ -24,6 +24,9 @@ for i in $*; do
       export NETSTANDARD_VERSION="${i#*=}"
       shift # past argument
       ;;
+    -lic=*|--license=*)
+      LICENSE="${i#*=}"
+      ;;
     --version)
       exec "$JCD_NEW_LIBS/jcd-new-version"
       exit 0
@@ -35,6 +38,8 @@ for i in $*; do
       ;;
   esac
 done
+
+select_license_template "$LICENSE"
 
 abort_on_missing_variable PROJECT_NAME "ABORTING: No project name specified. Please use -p=, --project=, or --project-name= to specify the project name."
 
@@ -94,8 +99,8 @@ process_template "$JCD_NEW_TEMPLATES/classlib/README.md.template" "./README.md"
 
 process_dot_github_templates "$JCD_NEW_TEMPLATES"
 
-echo "Creating LICENSE"
-process_template "$JCD_NEW_TEMPLATES/LICENSE.template" "./LICENSE"
+echo "Creating LICENSE file"
+process_template "$LICENSE_TEMPLATE" "./LICENSE"
 
 dotnet new nugetconfig
 
