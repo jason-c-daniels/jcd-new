@@ -64,7 +64,8 @@ abort_on_missing_gh
 abort_on_missing_dotnet
 
 # capture some data
-export YEAR=$(date +'%Y')
+YEAR=$(date +'%Y')
+export YEAR
 
 pushd "$github"
 
