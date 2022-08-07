@@ -97,13 +97,13 @@ While you don't need to have the following environment variables defined, they c
 * $GITHUB_TOKEN - this will be used, if present, but issue a warning about it being a security risk.
 
 ## Setting your environment variables
-First off, yes, I know, passing the GITHUB_TOKEN in an environment variable isn't secure.
-* **Don't use these scripts for anything sensitive you're working on.**
-* **If you don't want to use the GITHUB_TOKEN environment variable, don't use these scripts** ...until I find a suitable 
-  replacement method.
+First off, yes, I know, passing the GITHUB_TOKEN in an environment variable isn't secure. 
+But I allow for it, if the user insists. Hey. It's your system. Who am I to tell you how to manage it?
+The script does warn if this is used. So anyone inspecting the logs from a run will see the warning.
 
-To set the non-sensitive environment variables edit your ~/.bash_profile and add them in a 
-manner similar to the script below.
+To set the non-sensitive environment variables edit your ~/.bash_profile or ~/.profile and add them 
+in a manner similar to the script below. (*Which file to use depends entirely on which OS you're using
+and how you've configured your account on it.*)
 ```bash
 export github=~/Source/your-personal-github-folder # I keep mine separate from others' for personal edification. 
 export FULL_NAME="Your Full Name" # or at least how you want it to appear in the LICENSE file.
