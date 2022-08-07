@@ -182,10 +182,10 @@ warn_on_missing_variable() {
 
 validate_netstandard_version() {
   NETSTANDARD_VERSION="$1"
-  if [ -z ${NETSTANDARD_VERSION+x} ]
+  if [[ "$NETSTANDARD_VERSION" == "" ]]
   then
       echo ".NET Standard version not specified."
-      export NETSTANDARD_VERSION=2.1
+      NETSTANDARD_VERSION=2.1
   fi
 
   if [[ "$NETSTANDARD_VERSION" != @(1[.]0|1[.]1|1[.]2|1[.]3|1[.]4|1[.]5|1[.]6|2[.]0|2[.]1) ]]
@@ -195,6 +195,7 @@ validate_netstandard_version() {
   else
     echo "Using .NET Standard $NETSTANDARD_VERSION"
   fi
+  export NETSTANDARD_VERSION
 }
 
 abort_on_missing_dotnet(){
