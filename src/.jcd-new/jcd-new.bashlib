@@ -219,6 +219,7 @@ validate_netstandard_version() {
   else
     echo "Using .NET Standard $NETSTANDARD_VERSION"
   fi
+  export TARGET_FRAMEWORK="netstandard$NETSTANDARD_VERSION"
   export NETSTANDARD_VERSION
 }
 
@@ -250,13 +251,6 @@ abort_on_missing_gh() {
   # validate that the gh tool is installed
   gh_ver=$(gh --version)
   echo "gh version $gh_ver detected."
-}
-
-set_netstandard_version_and_connect_project_README_and_LICENSE_files() {
-  local ABORT_PREFIX="FROM set_netstandard_version_and_connect_project_README_and_LICENSE_files --"
-  abort_on_missing_variable NETSTANDARD_VERSION "$ABORT_PREFIX Cannot edit project when missing NETSTANDARD_VERSION." true
-  export TARGET_FRAMEWORK="netstandard$NETSTANDARD_VERSION"
-  set_target_framework_version_and_connect_project_README_and_LICENSE_files
 }
 
 set_target_framework_version_and_connect_project_README_and_LICENSE_files() {
@@ -403,7 +397,6 @@ export -f validate_netstandard_version
 export -f validate_target_framework_version
 export -f abort_on_missing_dotnet
 export -f abort_on_missing_gh
-export -f set_netstandard_version_and_connect_project_README_and_LICENSE_files
 export -f set_target_framework_version_and_connect_project_README_and_LICENSE_files
 export -f perform_initial_commit_and_set_branch_name_to_main
 export -f abort_on_missing_or_empty_variable

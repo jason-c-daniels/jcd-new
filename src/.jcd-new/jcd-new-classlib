@@ -61,13 +61,12 @@ fi
 
 if [[ "$TARGET_FRAMEWORK" != "" ]]; then
   validate_target_framework_version "$TARGET_FRAMEWORK"
-
-  abort_on_missing_variable TARGET_FRAMEWORK
 else
   validate_netstandard_version "$NETSTANDARD_VERSION"
-
   abort_on_missing_variable NETSTANDARD_VERSION
 fi
+
+abort_on_missing_variable TARGET_FRAMEWORK
 
 abort_on_missing_variable FULL_NAME "Cannot process $JCD_NEW_TEMPLATES/LICENSE.template without it." true
 
@@ -137,11 +136,7 @@ dotnet sln add "$PROJECT_NAME.Examples/$PROJECT_NAME.Examples.csproj"
 
 # Set netstandard/framework version. Add README.md, nuget.config and LICENSE to library .csproj file
 
-if [[ "$TARGET_FRAMEWORK" != "" ]]; then
-  set_target_framework_version_and_connect_project_README_and_LICENSE_files
-else
-  set_netstandard_version_and_connect_project_README_and_LICENSE_files
-fi
+set_target_framework_version_and_connect_project_README_and_LICENSE_files
 
 pushd "$PROJECT_NAME"
 
