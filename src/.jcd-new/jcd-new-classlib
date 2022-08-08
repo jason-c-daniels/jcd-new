@@ -30,6 +30,11 @@ for i in $*; do
       export NETSTANDARD_VERSION="${i#*=}"
       shift # past argument
       ;;
+    -f=*|--framework=*)
+      echo "found TARGET_FRAMEWORK parameter"
+      export TARGET_FRAMEWORK="${i#*=}"
+      shift # past argument
+      ;;
     -lic=*|--license=*)
       LICENSE="${i#*=}"
       ;;
@@ -49,9 +54,20 @@ select_license_template "$LICENSE"
 
 abort_on_missing_variable PROJECT_NAME "ABORTING: No project name specified. Please use -p=, --project=, or --project-name= to specify the project name."
 
-validate_netstandard_version "$NETSTANDARD_VERSION"
+if [[ "$TARGET_FRAMEWORK" != "" && "$NETSTANDARD_VERSION" != "" ]]; then
+  echo "You must specify either --netstandard-version= or --framework= , but not both"
+  exit 1
+fi
 
-abort_on_missing_variable NETSTANDARD_VERSION
+if [[ "$TARGET_FRAMEWORK" != "" ]]; then
+  validate_target_framework_version "$TARGET_FRAMEWORK"
+
+  abort_on_missing_variable TARGET_FRAMEWORK
+else
+  validate_netstandard_version "$NETSTANDARD_VERSION"
+
+  abort_on_missing_variable NETSTANDARD_VERSION
+fi
 
 abort_on_missing_variable FULL_NAME "Cannot process $JCD_NEW_TEMPLATES/LICENSE.template without it." true
 
@@ -119,8 +135,13 @@ dotnet sln add "$PROJECT_NAME.Tests/$PROJECT_NAME.Tests.csproj"
 create_examples_project "$PROJECT_NAME"
 dotnet sln add "$PROJECT_NAME.Examples/$PROJECT_NAME.Examples.csproj"
 
-# Set netstandard version. Add README.md, nuget.config and LICENSE to library .csproj file
-set_netstandard_version_and_connect_project_README_and_LICENSE_files
+# Set netstandard/framework version. Add README.md, nuget.config and LICENSE to library .csproj file
+
+if [[ "$TARGET_FRAMEWORK" != "" ]]; then
+  set_target_framework_version_and_connect_project_README_and_LICENSE_files
+else
+  set_netstandard_version_and_connect_project_README_and_LICENSE_files
+fi
 
 pushd "$PROJECT_NAME"
 

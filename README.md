@@ -9,6 +9,10 @@ jcd-new classlib --project-name=Jcd.Delete.Me1
 jcd-new classlib --project=Jcd.Delete.Me2
 jcd-new classlib -p=Jcd.Delete.Me3
 
+# Create a .NET 6.0 class library and push it to GitHub 
+jcd-new classlib -p=Jcd.Delete.Me1 --framework=net6.0
+jcd-new classlib -p=Jcd.Delete.Me1 -f=net6.0
+
 # Create a .NET Standard 1.0 class library and push it to GitHub 
 jcd-new classlib -p=Jcd.Delete.Me1 --netstandard-version=1.0
 jcd-new classlib -p=Jcd.Delete.Me1 -nsv=1.0
@@ -80,29 +84,29 @@ jcd-new --version
 ## Required Environment Variables
 
 You must have the following environment variables defined:
-* $github - must point to the root folder for your personal GitHub repositories.
+* github - must point to the root folder for your personal GitHub repositories.
 
-* $GITHUB_USER_NAME - is required for generating the correct documentation from various template files.
+* GITHUB_USER_NAME - is required for generating the correct documentation from various template files.
 
-* $FULL_NAME - is required for generating the correct documentation from various template files.
+* FULL_NAME - is required for generating the correct documentation from various template files.
 
 ## Optional, But Useful, Environment Variables 
 
 While you don't need to have the following environment variables defined, they can be helpful:
 
-* $KOFI_ID - This is your id on ko-fi.com, assuming you have one. If not provide this entry in .github/FUNDING.yml will be blank.
+* KOFI_ID - This is your id on ko-fi.com, assuming you have one. If not provide this entry in .github/FUNDING.yml will be blank.
   If you don't want to solicit any funding, remove .github/FUNDING.yml after the project is created.
-* $PATREON_ID - This is your id on patreon.com, assuming you have one. If not this entry in .github/FUNDING.yml will be blank.
+* PATREON_ID - This is your id on patreon.com, assuming you have one. If not this entry in .github/FUNDING.yml will be blank.
   If you don't want to solicit any funding, remove .github/FUNDING.yml after the project is created.
-* $PROJECT_EMAIL - This is the email address where you want people to contact you at regarding this project.
+* PROJECT_EMAIL - This is the email address where you want people to contact you at regarding this project.
   If it's not provided the following will be used: project.email@not.a.real.domain.org; edit CODE_OF_CONDUCT.md
   to remove references to it if you do not want people to contact you via email for the project.
-* $NUGET_PACKAGE_ICON_URL - This is the URL to the image that will be used when packaging the nuget package. If it's 
+* NUGET_PACKAGE_ICON_URL - This is the URL to the image that will be used when packaging the nuget package. If it's 
   not provided the default nuget icon will be used.
 
 ## Optional, Deprecated, Environment Variable
 
-* $GITHUB_TOKEN - this will be used, if present, but issue a warning about it being a security risk.
+* GITHUB_TOKEN - this will be used, if present, but issue a warning about it being a security risk.
 
 ## Setting your environment variables
 First off, yes, I know, passing the GITHUB_TOKEN in an environment variable isn't secure. 
