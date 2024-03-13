@@ -99,7 +99,7 @@ init_git() {
 append_gitignore(){
   local GI_ROOT="https://raw.githubusercontent.com/github/gitignore/master"
   echo "appending $1 to .gitignore from $GI_ROOT"
-  curl "$GI_ROOT/$1" >> .gitignore
+  curl -k "$GI_ROOT/$1" >> .gitignore
 }
 
 # create an empty solution file
@@ -231,7 +231,7 @@ validate_target_framework_version() {
       TARGET_FRAMEWORK=netstandard2.1
   fi
 
-  if [[ "$TARGET_FRAMEWORK" != @(netstandard1[.][0-6]|netstandard2[.][01]|netcoreapp1[.][01]|netcoreapp2[.][012]|netcoreapp3[.][01]|net[56][.]0) ]]
+  if [[ "$TARGET_FRAMEWORK" != @(netstandard1[.][0-6]|netstandard2[.][01]|netcoreapp1[.][01]|netcoreapp2[.][012]|netcoreapp3[.][01]|net[5-8][.]0) ]]
   then
     echo "$TARGET_FRAMEWORK is not a recognized/supported framework."
     exit 1
