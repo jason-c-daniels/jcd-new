@@ -7,7 +7,7 @@ if [ $# -eq 0 ]; then
   exit 1
 fi
 
-for i in $*; do
+for i in "$@"; do
   case $i in
     -p=*|--project=*|--project-name=*)
       echo "found project name parameter"
